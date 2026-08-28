@@ -43,11 +43,11 @@ export const Hero: React.FC<HeroProps> = ({
           {/* Left Column: Core Value Proposition */}
           <div className="lg:col-span-6 space-y-6 text-left">
             {/* High-tier Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-medium text-slate-300">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950 border border-slate-800 text-xs font-medium text-slate-300">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="font-semibold text-slate-200">AI Commerce Engine</span>
               <span className="text-slate-500">|</span>
-              <span className="text-slate-400">8 Synchronized Growth Agents</span>
+              <span className="text-slate-400">9 Synchronized Growth Agents</span>
             </div>
 
             {/* Headline */}
@@ -332,7 +332,7 @@ export const Hero: React.FC<HeroProps> = ({
               <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
                 <div className="flex items-center gap-1.5">
                   <Activity className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>8 AI Agents Synchronized</span>
+                  <span>9 AI Agents Synchronized</span>
                 </div>
                 <button
                   onClick={onOpenProductDemo}

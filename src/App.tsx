@@ -20,6 +20,7 @@ import { PricingPage } from './pages/PricingPage';
 import { ResourcesPage } from './pages/ResourcesPage';
 import { LoginPage } from './pages/LoginPage';
 import { GetStartedPage } from './pages/GetStartedPage';
+import { AdminPage } from './pages/AdminPage';
 
 export default function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -50,6 +51,7 @@ export default function App() {
             <Route path="/resources" element={<ResourcesPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/get-started" element={<GetStartedPage />} />
+            <Route path="/admin" element={<AdminPage />} />
             {/* Fallback route */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

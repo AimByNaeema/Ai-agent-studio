@@ -1,0 +1,154 @@
+{
+  "entities": {
+    "ProjectLead": {
+      "title": "ProjectLead",
+      "description": "Project lead inquiry submitted via contact, get-started, or consultation forms",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 150
+        },
+        "phone": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "company_name": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "website_url": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "service_interest": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "business_industry": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "project_budget": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "project_timeline": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "message": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 4000
+        },
+        "source_page": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "status": {
+          "type": "string",
+          "enum": ["new", "contacted", "qualified", "proposal_sent", "closed", "archived"]
+        },
+        "internal_notes": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      },
+      "required": ["full_name", "email", "message", "service_interest", "status", "created_at"]
+    },
+    "ProjectRecord": {
+      "title": "ProjectRecord",
+      "description": "Agency portfolio projects & case studies",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "slug": { "type": "string" },
+        "name": { "type": "string" },
+        "short_description": { "type": "string" },
+        "full_description": { "type": "string" },
+        "category": { "type": "string" },
+        "status": { "type": "string" },
+        "featured": { "type": "boolean" },
+        "sort_order": { "type": "number" },
+        "is_published": { "type": "boolean" }
+      }
+    },
+    "ServiceRecord": {
+      "title": "ServiceRecord",
+      "description": "Agency main services catalog",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "slug": { "type": "string" },
+        "title": { "type": "string" },
+        "short_description": { "type": "string" },
+        "full_description": { "type": "string" },
+        "icon_key": { "type": "string" },
+        "is_available_for_custom_projects": { "type": "boolean" },
+        "sort_order": { "type": "number" },
+        "is_published": { "type": "boolean" }
+      }
+    },
+    "NewsletterSubscriber": {
+      "title": "NewsletterSubscriber",
+      "description": "Newsletter/briefing subscription record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "source_page": { "type": "string" },
+        "created_at": { "type": "string" },
+        "is_active": { "type": "boolean" }
+      }
+    },
+    "AdminProfile": {
+      "title": "AdminProfile",
+      "description": "System administrator profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "super_admin"] },
+        "created_at": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/project_leads/{leadId}": {
+      "schema": "ProjectLead",
+      "description": "Commercial and technical project leads submitted by prospective clients"
+    },
+    "/projects/{projectId}": {
+      "schema": "ProjectRecord",
+      "description": "Portfolio projects and case study records"
+    },
+    "/services/{serviceId}": {
+      "schema": "ServiceRecord",
+      "description": "Agency service offerings"
+    },
+    "/newsletter_subscribers/{subscriberId}": {
+      "schema": "NewsletterSubscriber",
+      "description": "Newsletter and briefing email subscribers"
+    },
+    "/admins/{adminUid}": {
+      "schema": "AdminProfile",
+      "description": "Authorized administrative user accounts"
+    }
+  }
+}

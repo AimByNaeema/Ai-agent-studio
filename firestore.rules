@@ -1,0 +1,102 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Default Deny All Catch-All Gate
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper Functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == 'aimbynaeema@gmail.com' ||
+        request.auth.token.email == 'aiagentstudioo@gmail.com'
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidLead(data) {
+      return data.full_name is string && data.full_name.size() >= 2 && data.full_name.size() <= 150 &&
+             data.email is string && data.email.size() >= 5 && data.email.size() <= 150 &&
+             data.message is string && data.message.size() >= 5 && data.message.size() <= 5000 &&
+             data.service_interest is string && data.service_interest.size() <= 100 &&
+             data.status in ['new', 'contacted', 'qualified', 'proposal_sent', 'closed', 'archived'] &&
+             data.created_at is string && data.created_at.size() <= 40 &&
+             data.updated_at is string && data.updated_at.size() <= 40;
+    }
+
+    function isValidSubscriber(data) {
+      return data.email is string && data.email.size() >= 5 && data.email.size() <= 150 &&
+             data.is_active is bool &&
+             data.created_at is string && data.created_at.size() <= 40;
+    }
+
+    // ========================================================================
+    // 1. PROJECT LEADS COLLECTION (/project_leads)
+    // Matches the exact collection name used by Contact & Get Started forms.
+    // - Public write: Allowed only through secure validated schema logic
+    // - Public read/list: Strictly forbidden (prevents scraping of customer PII)
+    // - Admin read/update/delete: Allowed only for authenticated administrators
+    // ========================================================================
+    match /project_leads/{leadId} {
+      allow create: if isValidId(leadId) && isValidLead(request.resource.data);
+      allow get, list, update, delete: if isAdmin();
+    }
+
+    // ========================================================================
+    // 2. NEWSLETTER SUBSCRIBERS COLLECTION (/newsletter_subscribers)
+    // ========================================================================
+    match /newsletter_subscribers/{subscriberId} {
+      allow create: if isValidId(subscriberId) && isValidSubscriber(request.resource.data);
+      allow get, list, update, delete: if isAdmin();
+    }
+
+    // ========================================================================
+    // 3. PUBLISHED PROJECTS & CASE STUDIES (/projects)
+    // - Public read: Allowed only if is_published == true
+    // - Admin: Full read/write management
+    // ========================================================================
+    match /projects/{projectId} {
+      allow get, list: if resource.data.is_published == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ========================================================================
+    // 4. PUBLISHED SERVICES CATALOG (/services)
+    // - Public read: Allowed only if is_published == true
+    // - Admin: Full read/write management
+    // ========================================================================
+    match /services/{serviceId} {
+      allow get, list: if resource.data.is_published == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ========================================================================
+    // 5. AGENT CATEGORIES (/agent_categories)
+    // - Public read: Allowed only if is_published == true
+    // - Admin: Full read/write management
+    // ========================================================================
+    match /agent_categories/{categoryId} {
+      allow get, list: if resource.data.is_published == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ========================================================================
+    // 6. ADMIN PROFILES (/admins)
+    // ========================================================================
+    match /admins/{adminUid} {
+      allow read: if isSignedIn() && (request.auth.uid == adminUid || isAdmin());
+      allow write: if isAdmin();
+    }
+  }
+}

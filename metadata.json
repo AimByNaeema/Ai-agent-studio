@@ -1,6 +1,6 @@
 {
   "name": "AI AGENT STUDIO",
-  "description": "An intelligent AI ecommerce growth platform that researches markets, discovers products, optimizes SEO and listings, plans marketing, analyzes advertising, and drives smarter growth decisions.",
+  "description": "AI Agents & Digital Solutions Built for Modern Businesses. We build intelligent AI agents, professional websites, and custom digital systems designed around the specific needs of each business.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

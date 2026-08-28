@@ -159,3 +159,122 @@ export interface FaqItem {
   answer: string;
   category: 'Overview' | 'Operations & Approval' | 'Security' | 'Pricing';
 }
+
+// ==========================================
+// Backend & Database Entity Types (Supabase)
+// ==========================================
+
+export type UserRole = 'admin' | 'staff';
+
+export interface AdminProfile {
+  id: string;
+  full_name: string | null;
+  email: string;
+  role: UserRole;
+  created_at: string;
+  updated_at: string;
+}
+
+export type ServiceInterest =
+  | 'custom_ai_agent'
+  | 'web_development'
+  | 'ecommerce_solution'
+  | 'ai_automation'
+  | 'custom_digital_solution'
+  | 'other';
+
+export type LeadStatus =
+  | 'new'
+  | 'contacted'
+  | 'qualified'
+  | 'proposal_sent'
+  | 'closed'
+  | 'archived';
+
+export interface ProjectLead {
+  id: string;
+  full_name: string;
+  email: string;
+  phone?: string | null;
+  company_name?: string | null;
+  website_url?: string | null;
+  service_interest: ServiceInterest;
+  business_industry?: string | null;
+  project_budget?: string | null;
+  project_timeline?: string | null;
+  message: string;
+  source_page: string;
+  status: LeadStatus;
+  internal_notes?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProjectLeadSubmission {
+  full_name: string;
+  email: string;
+  phone?: string;
+  company_name?: string;
+  website_url?: string;
+  service_interest: ServiceInterest;
+  business_industry?: string;
+  project_budget?: string;
+  project_timeline?: string;
+  message: string;
+  source_page?: string;
+}
+
+export type ProjectStatus = 'in_development' | 'coming_soon' | 'live' | 'archived';
+
+export interface ProjectRecord {
+  id: string;
+  slug: string;
+  name: string;
+  short_description: string;
+  full_description: string;
+  category: string;
+  status: ProjectStatus;
+  technologies: string[];
+  featured: boolean;
+  cover_image_url?: string | null;
+  project_url?: string | null;
+  sort_order: number;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ServiceRecord {
+  id: string;
+  slug: string;
+  title: string;
+  short_description: string;
+  full_description: string;
+  icon_key: string;
+  is_available_for_custom_projects: boolean;
+  sort_order: number;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AgentCategoryRecord {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  is_published: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NewsletterSubscriberRecord {
+  id: string;
+  email: string;
+  consent_at: string;
+  source_page: string;
+  created_at: string;
+  is_active: boolean;
+}
+

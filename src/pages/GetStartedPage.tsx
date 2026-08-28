@@ -17,6 +17,7 @@ import {
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { PRICING_PLANS } from '../data/mockData';
 import { usePageMetadata } from '../hooks/usePageMetadata';
+import { submitProjectLead } from '../lib/firebase';
 
 export const GetStartedPage: React.FC = () => {
   usePageMetadata({
@@ -68,9 +69,26 @@ export const GetStartedPage: React.FC = () => {
     }
   };
 
-  const handleLaunchEvaluation = (e: React.FormEvent) => {
+  const handleLaunchEvaluation = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    try {
+      await submitProjectLead({
+        full_name: 'Store Founder',
+        email: workEmail.trim(),
+        company_name: storeName.trim(),
+        website_url: storeUrl ? `https://${storeUrl.replace(/^https?:\/\//, '')}` : undefined,
+        service_interest: 'ecommerce_solution',
+        business_industry: primaryCategory,
+        project_budget: `${monthlyGmv} GMV (${selectedPlan.name} Plan)`,
+        project_timeline: '14-Day Free Evaluation',
+        message: `Evaluation Onboarding. Store Platform: ${storePlatform}, Target Regions: ${selectedRegions.join(', ')}, Priority Objectives: ${selectedObjectives.join(', ')}`,
+        source_page: 'get_started_wizard',
+      });
+    } catch (err) {
+      console.warn('Lead capture notice:', err);
+    }
 
     setTimeout(() => {
       setIsSubmitting(false);
@@ -78,7 +96,7 @@ export const GetStartedPage: React.FC = () => {
       setTimeout(() => {
         navigate('/platform');
       }, 2000);
-    }, 1500);
+    }, 1200);
   };
 
   return (
@@ -440,7 +458,7 @@ export const GetStartedPage: React.FC = () => {
                       className="px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 active:bg-orange-700 font-bold text-xs text-white flex items-center gap-2 shadow-lg shadow-orange-500/25 cursor-pointer disabled:opacity-50"
                     >
                       {isSubmitting ? (
-                        <span>Initializing 8 AI Agents...</span>
+                        <span>Initializing 9 AI Agents...</span>
                       ) : (
                         <>
                           <span>Start 14-Day Evaluation Now</span>

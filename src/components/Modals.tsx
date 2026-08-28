@@ -1,7 +1,28 @@
 import React, { useState } from 'react';
-import { X, CheckCircle2, ArrowRight, ShieldCheck, Sparkles, Lock, Store, Key, AlertCircle } from 'lucide-react';
-import { PricingPlan } from '../types';
+import {
+  X,
+  CheckCircle2,
+  ArrowRight,
+  ShieldCheck,
+  Sparkles,
+  Lock,
+  Store,
+  Key,
+  AlertCircle,
+  Send,
+  Building2,
+  Mail,
+  User,
+  Phone,
+  Globe,
+  Briefcase
+} from 'lucide-react';
+import { PricingPlan, ServiceInterest } from '../types';
+import { submitProjectLead } from '../lib/firebase';
 
+// ============================================================================
+// 1. GET STARTED / STORE ONBOARDING MODAL
+// ============================================================================
 interface GetStartedModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -17,12 +38,13 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
   isAnnual,
   onSuccess,
 }) => {
-  const [step, setStep] = useState<1 | 2>(1);
   const [storeName, setStoreName] = useState('');
   const [storeUrl, setStoreUrl] = useState('');
   const [platform, setPlatform] = useState('Shopify');
   const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -35,14 +57,37 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
     ? 63
     : 79;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
     setIsLoading(true);
-    setTimeout(() => {
+
+    try {
+      const res = await submitProjectLead({
+        full_name: fullName.trim() || storeName.trim() || 'Store Founder',
+        email: email.trim(),
+        company_name: storeName.trim(),
+        website_url: storeUrl ? `https://${storeUrl.replace(/^https?:\/\//, '')}` : undefined,
+        service_interest: 'ecommerce_solution',
+        business_industry: 'Ecommerce Retail',
+        project_budget: `$${planPrice}/mo (${planTitle} Plan)`,
+        message: `Evaluation Signup for ${planTitle} Tier. Store: ${storeName || 'N/A'}, Platform: ${platform}, URL: ${storeUrl || 'N/A'}.`,
+        source_page: 'get_started_modal',
+      });
+
+      if (!res.success) {
+        setErrorMessage(res.error || 'Failed to submit evaluation request. Please check your information.');
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(false);
       onClose();
       onSuccess(`Welcome to AI AGENT STUDIO! Connected ${storeName || 'store'} to the ${planTitle} evaluation.`);
-    }, 1000);
+    } catch (err: any) {
+      setErrorMessage(err?.message || 'A network error occurred. Please try again.');
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -62,7 +107,7 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
         {/* Modal Header */}
         <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
           <div className="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-orange-500/20 font-mono">
-            EG
+            AI
           </div>
           <div>
             <div className="text-xs font-mono text-orange-400 font-bold uppercase">
@@ -74,6 +119,13 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
           </div>
         </div>
 
+        {errorMessage && (
+          <div className="mt-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
         {/* Step Form */}
         <form onSubmit={handleSubmit} className="mt-5 space-y-4">
           <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs">
@@ -84,6 +136,38 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
             <div className="text-right">
               <span className="font-mono font-bold text-white text-sm">${planPrice}/mo</span>
               <span className="text-[10px] text-slate-400 block">{isAnnual ? 'Billed annually' : 'Billed monthly'}</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-300 block">
+                Your Full Name
+              </label>
+              <input
+                id="input-lead-fullname"
+                type="text"
+                required
+                placeholder="Alex Morgan"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="w-full px-3 py-2 text-xs text-white bg-slate-950 placeholder:text-slate-500 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-300 block">
+                Store Name
+              </label>
+              <input
+                id="input-store-name"
+                type="text"
+                required
+                placeholder="Apex Lifestyle"
+                value={storeName}
+                onChange={(e) => setStoreName(e.target.value)}
+                className="w-full px-3 py-2 text-xs text-white bg-slate-950 placeholder:text-slate-500 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+              />
             </div>
           </div>
 
@@ -128,32 +212,18 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-300 block">
-                Store Name
+                Work Email
               </label>
               <input
-                id="input-store-name"
-                type="text"
-                placeholder="e.g. Apex Lifestyle"
-                value={storeName}
-                onChange={(e) => setStoreName(e.target.value)}
+                id="input-work-email"
+                type="email"
+                required
+                placeholder="founder@yourbrand.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-3 py-2 text-xs text-white bg-slate-950 placeholder:text-slate-500 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
               />
             </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300 block">
-              Work Email for Growth Dashboard
-            </label>
-            <input
-              id="input-work-email"
-              type="email"
-              required
-              placeholder="founder@yourbrand.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 text-xs text-white bg-slate-950 placeholder:text-slate-500 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-            />
           </div>
 
           {/* Security Notice */}
@@ -161,7 +231,7 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
             <ShieldCheck className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
             <div>
               <span className="font-bold block">Protected by Read-Only Scopes</span>
-              <span>No live store changes occur without your explicit approval.</span>
+              <span>No live store changes occur without your explicit human signoff.</span>
             </div>
           </div>
 
@@ -169,10 +239,10 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
             id="btn-submit-get-started"
             type="submit"
             disabled={isLoading}
-            className="w-full py-3.5 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-orange-500/25 transition-all cursor-pointer"
+            className="w-full py-3.5 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-orange-500/25 transition-all cursor-pointer disabled:opacity-50"
           >
             {isLoading ? (
-              <span>Initializing Store Sandbox...</span>
+              <span>Connecting & Saving Evaluation Lead...</span>
             ) : (
               <>
                 <span>Launch 14-Day Free Evaluation</span>
@@ -186,6 +256,231 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
   );
 };
 
+// ============================================================================
+// 2. START YOUR PROJECT / CUSTOM INQUIRY MODAL
+// ============================================================================
+interface StartProjectModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  defaultService?: ServiceInterest;
+  onSuccess: (message: string) => void;
+}
+
+export const StartProjectModal: React.FC<StartProjectModalProps> = ({
+  isOpen,
+  onClose,
+  defaultService = 'custom_ai_agent',
+  onSuccess,
+}) => {
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [websiteUrl, setWebsiteUrl] = useState('');
+  const [serviceInterest, setServiceInterest] = useState<ServiceInterest>(defaultService);
+  const [businessIndustry, setBusinessIndustry] = useState('');
+  const [projectBudget, setProjectBudget] = useState('$10k - $25k');
+  const [projectTimeline, setProjectTimeline] = useState('1-2 Months');
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage(null);
+    setIsLoading(true);
+
+    try {
+      const res = await submitProjectLead({
+        full_name: fullName,
+        email: email,
+        phone: phone || undefined,
+        company_name: companyName || undefined,
+        website_url: websiteUrl || undefined,
+        service_interest: serviceInterest,
+        business_industry: businessIndustry || undefined,
+        project_budget: projectBudget,
+        project_timeline: projectTimeline,
+        message: message,
+        source_page: 'start_project_modal',
+      });
+
+      if (!res.success) {
+        setErrorMessage(res.error || 'Failed to submit inquiry.');
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(false);
+      onClose();
+      onSuccess(`Thank you ${fullName}! Your project inquiry has been securely received. Our team will contact you shortly.`);
+    } catch (err: any) {
+      setErrorMessage(err?.message || 'An error occurred. Please try again.');
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+      <div
+        id="start-project-modal-content"
+        className="bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl max-w-xl w-full p-6 sm:p-8 text-left relative animate-in fade-in zoom-in-95 duration-150 text-white my-8"
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-5 right-5 p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none cursor-pointer"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        {/* Header */}
+        <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+          <div className="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-orange-500/20 font-mono">
+            AI
+          </div>
+          <div>
+            <div className="text-xs font-mono text-orange-400 font-bold uppercase">
+              Project Consultation
+            </div>
+            <h3 className="text-lg font-bold text-white">
+              Start Your Custom Project
+            </h3>
+          </div>
+        </div>
+
+        {errorMessage && (
+          <div className="mt-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-300 block">Full Name *</label>
+              <input
+                type="text"
+                required
+                placeholder="Sarah Jenkins"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="w-full px-3 py-2 text-xs text-white bg-slate-950 placeholder:text-slate-500 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-300 block">Work Email *</label>
+              <input
+                type="email"
+                required
+                placeholder="sarah@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-3 py-2 text-xs text-white bg-slate-950 placeholder:text-slate-500 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-300 block">Company / Brand Name</label>
+              <input
+                type="text"
+                placeholder="Apex Enterprises"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                className="w-full px-3 py-2 text-xs text-white bg-slate-950 placeholder:text-slate-500 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-300 block">Phone (Optional)</label>
+              <input
+                type="tel"
+                placeholder="+1 (555) 019-2834"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full px-3 py-2 text-xs text-white bg-slate-950 placeholder:text-slate-500 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-300 block">Primary Service Interest *</label>
+              <select
+                value={serviceInterest}
+                onChange={(e) => setServiceInterest(e.target.value as ServiceInterest)}
+                className="w-full px-3 py-2 text-xs text-white bg-slate-950 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+              >
+                <option value="custom_ai_agent">Custom AI Agents</option>
+                <option value="web_development">Web Development</option>
+                <option value="ecommerce_solution">Ecommerce Solutions</option>
+                <option value="ai_automation">AI Business Automation</option>
+                <option value="custom_digital_solution">Custom Digital Solutions</option>
+                <option value="other">Other / Custom Architecture</option>
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-300 block">Project Budget Range</label>
+              <select
+                value={projectBudget}
+                onChange={(e) => setProjectBudget(e.target.value)}
+                className="w-full px-3 py-2 text-xs text-white bg-slate-950 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+              >
+                <option value="Under $10k">Under $10,000</option>
+                <option value="$10k - $25k">$10,000 – $25,000</option>
+                <option value="$25k - $50k">$25,000 – $50,000</option>
+                <option value="$50k+">$50,000+</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-slate-300 block">Project Description / Requirements *</label>
+            <textarea
+              required
+              rows={3}
+              placeholder="Tell us about the workflows you want to automate, the website/application you want to build, or your technical specifications..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full px-3 py-2 text-xs text-white bg-slate-950 placeholder:text-slate-500 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none resize-none"
+            />
+          </div>
+
+          <div className="flex items-center justify-between pt-2">
+            <span className="text-[11px] text-slate-400 flex items-center gap-1">
+              <Lock className="w-3 h-3 text-emerald-400" />
+              <span>Directly transmitted to AI AGENT STUDIO</span>
+            </span>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="py-2.5 px-5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-orange-500/20 transition-all cursor-pointer disabled:opacity-50"
+            >
+              {isLoading ? (
+                <span>Submitting Project Brief...</span>
+              ) : (
+                <>
+                  <span>Submit Inquiry</span>
+                  <Send className="w-3.5 h-3.5" />
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// 3. LOGIN MODAL (Console & Admin Access)
+// ============================================================================
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -205,7 +500,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSucce
     setTimeout(() => {
       setIsLoading(false);
       onClose();
-      onSuccess(`Signed in to AI AGENT STUDIO console as ${email || 'demo user'}.`);
+      onSuccess(`Signed in to AI AGENT STUDIO console as ${email || 'authorized user'}.`);
     }, 800);
   };
 
@@ -225,10 +520,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSucce
 
         <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
           <div className="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center font-bold text-sm shadow-sm font-mono">
-            EG
+            AI
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">Merchant Login</h3>
+            <h3 className="text-lg font-bold text-white">Merchant & Client Login</h3>
             <span className="text-xs text-slate-400">Access your Growth Console</span>
           </div>
         </div>
@@ -240,7 +535,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSucce
               id="input-login-email"
               type="email"
               required
-              placeholder="operator@ecommerce.com"
+              placeholder="operator@brand.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3.5 py-2.5 text-xs text-white bg-slate-950 placeholder:text-slate-500 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
@@ -273,7 +568,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSucce
           </button>
 
           <div className="text-center text-[11px] text-slate-500 pt-2">
-            <span>Demo Console Login • 256-Bit Encrypted Session</span>
+            <span>Secure 256-Bit Encrypted Session</span>
           </div>
         </form>
       </div>
@@ -281,6 +576,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSucce
   );
 };
 
+// ============================================================================
+// 4. TOAST NOTIFICATION
+// ============================================================================
 export const ToastNotification: React.FC<{ message: string | null; onClose: () => void }> = ({
   message,
   onClose,
@@ -296,7 +594,7 @@ export const ToastNotification: React.FC<{ message: string | null; onClose: () =
         <div className="font-bold text-orange-300">Action Confirmed</div>
         <p className="text-slate-300 mt-0.5 leading-relaxed">{message}</p>
       </div>
-      <button onClick={onClose} className="text-slate-400 hover:text-white p-1">
+      <button onClick={onClose} className="text-slate-400 hover:text-white p-1 cursor-pointer">
         <X className="w-3.5 h-3.5" />
       </button>
     </div>
