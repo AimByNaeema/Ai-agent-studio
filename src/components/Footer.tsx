@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Lock, ArrowRight, Mail, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, CheckCircle2, AlertCircle } from 'lucide-react';
 import { subscribeNewsletter } from '../lib/firebase';
 
 export const Footer: React.FC = () => {
@@ -42,12 +42,12 @@ export const Footer: React.FC = () => {
               </span>
             </Link>
             <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
-              Intelligent AI agents, professional websites, and custom digital systems designed around the specific needs of modern businesses.
+              We build custom AI agents, professional websites, ecommerce systems, automation workflows, and digital tools designed around the needs of each business.
             </p>
             <div className="flex flex-col gap-1 text-[11px] text-slate-400 pt-1">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                <span>All Systems Operational (99.99% SLA)</span>
+                <span>Custom Engineering Studio</span>
               </div>
               <div className="flex items-center gap-1.5 text-slate-400 pt-0.5">
                 <span>Inquiries:</span>
@@ -60,7 +60,7 @@ export const Footer: React.FC = () => {
             {/* Newsletter Subscription Box */}
             <div className="pt-2 max-w-sm">
               <span className="text-[11px] font-semibold text-slate-300 block mb-1.5">
-                Stay updated on AI systems & product briefs:
+                Receive updates on AI agents & digital technology:
               </span>
               <form onSubmit={handleSubscribe} className="flex gap-2">
                 <div className="relative flex-1">
@@ -68,7 +68,7 @@ export const Footer: React.FC = () => {
                   <input
                     type="email"
                     required
-                    placeholder="Enter work email..."
+                    placeholder="Enter business email..."
                     value={newsletterEmail}
                     onChange={(e) => setNewsletterEmail(e.target.value)}
                     className="w-full pl-8 pr-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white placeholder:text-slate-600 text-xs focus:outline-none focus:ring-1 focus:ring-orange-500"
@@ -91,52 +91,51 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Col 3: Services & Capabilities */}
+          {/* Col 3: Services & Offerings */}
           <div className="space-y-3 text-left">
-            <div className="text-white font-bold font-mono uppercase tracking-wider text-xs">Capabilities</div>
+            <div className="text-white font-bold font-mono uppercase tracking-wider text-xs">What We Build</div>
             <ul className="space-y-2">
-              <li><Link to="/platform" className="hover:text-white transition-colors">Custom AI Agents</Link></li>
-              <li><Link to="/platform" className="hover:text-white transition-colors">Website Building</Link></li>
-              <li><Link to="/solutions" className="hover:text-white transition-colors">Ecommerce Growth AI</Link></li>
-              <li><Link to="/features" className="hover:text-white transition-colors">Business Automation</Link></li>
-              <li><Link to="/platform#capabilities" className="hover:text-white transition-colors">9 Sub-Agents Graph</Link></li>
+              <li><Link to="/ai-agents" className="hover:text-white transition-colors">Custom AI Agents</Link></li>
+              <li><Link to="/web-development" className="hover:text-white transition-colors">Web Development</Link></li>
+              <li><Link to="/solutions" className="hover:text-white transition-colors">Ecommerce Solutions</Link></li>
+              <li><Link to="/ai-agents" className="hover:text-white transition-colors">AI Business Automation</Link></li>
+              <li><Link to="/solutions" className="hover:text-white transition-colors">Custom Digital Solutions</Link></li>
             </ul>
           </div>
 
-          {/* Col 4: Solutions */}
+          {/* Col 4: Solutions by Goal */}
           <div className="space-y-3 text-left">
             <div className="text-white font-bold font-mono uppercase tracking-wider text-xs">Solutions</div>
             <ul className="space-y-2">
-              <li><Link to="/solutions?tab=product-research" className="hover:text-white transition-colors">Product Research</Link></li>
-              <li><Link to="/solutions?tab=website-building" className="hover:text-white transition-colors">Website Building</Link></li>
-              <li><Link to="/solutions?tab=global-markets" className="hover:text-white transition-colors">Global Markets</Link></li>
-              <li><Link to="/solutions?tab=seo" className="hover:text-white transition-colors">SEO Optimization</Link></li>
-              <li><Link to="/solutions?tab=listing-optimization" className="hover:text-white transition-colors">Listing Optimizer</Link></li>
-              <li><Link to="/solutions?tab=marketing" className="hover:text-white transition-colors">Marketing Playbooks</Link></li>
+              <li><Link to="/solutions?goal=leads" className="hover:text-white transition-colors">Get More Leads</Link></li>
+              <li><Link to="/solutions?goal=support" className="hover:text-white transition-colors">Improve Support</Link></li>
+              <li><Link to="/solutions?goal=website" className="hover:text-white transition-colors">Launch Website</Link></li>
+              <li><Link to="/solutions?goal=automate" className="hover:text-white transition-colors">Automate Work</Link></li>
+              <li><Link to="/solutions?goal=ecommerce" className="hover:text-white transition-colors">Ecommerce Operations</Link></li>
+              <li><Link to="/solutions?goal=system" className="hover:text-white transition-colors">Custom Business System</Link></li>
             </ul>
           </div>
 
-          {/* Col 5: Security & Trust */}
+          {/* Col 5: Methodology & Trust */}
           <div className="space-y-3 text-left">
-            <div className="text-white font-bold font-mono uppercase tracking-wider text-xs">Security & Trust</div>
+            <div className="text-white font-bold font-mono uppercase tracking-wider text-xs">Methodology</div>
             <ul className="space-y-2">
-              <li><Link to="/how-it-works" className="hover:text-white transition-colors">Human Approval Gates</Link></li>
-              <li><Link to="/platform" className="hover:text-white transition-colors">Read-Only Scopes</Link></li>
-              <li><Link to="/features" className="hover:text-white transition-colors">Immutable Audit Logs</Link></li>
-              <li><Link to="/platform" className="hover:text-white transition-colors">Zero LLM Data Training</Link></li>
-              <li><Link to="/resources" className="hover:text-white transition-colors">Architecture Whitepaper</Link></li>
+              <li><Link to="/how-it-works" className="hover:text-white transition-colors">Six-Step Process</Link></li>
+              <li><Link to="/how-it-works#human-approval" className="hover:text-white transition-colors">Human Approval Controls</Link></li>
+              <li><Link to="/how-it-works#security" className="hover:text-white transition-colors">Security & Data Privacy</Link></li>
+              <li><Link to="/pricing" className="hover:text-white transition-colors">Custom Project Scoping</Link></li>
+              <li><Link to="/projects" className="hover:text-white transition-colors">Selected Projects</Link></li>
             </ul>
           </div>
 
-          {/* Col 6: Resources & Auth */}
+          {/* Col 6: Project Intake & Studio */}
           <div className="space-y-3 text-left">
-            <div className="text-white font-bold font-mono uppercase tracking-wider text-xs">Portal & CRM</div>
+            <div className="text-white font-bold font-mono uppercase tracking-wider text-xs">Studio</div>
             <ul className="space-y-2">
-              <li><Link to="/resources" className="hover:text-white transition-colors">Resource Hub & Guides</Link></li>
-              <li><Link to="/pricing" className="hover:text-white transition-colors">Plans & Custom Pricing</Link></li>
-              <li><Link to="/get-started" className="hover:text-white transition-colors">Start a Project</Link></li>
-              <li><Link to="/login" className="hover:text-white transition-colors">Merchant Login</Link></li>
-              <li><Link to="/admin" className="text-orange-400 hover:text-orange-300 font-semibold transition-colors flex items-center gap-1">Admin Portal <span className="text-[10px] font-mono px-1 rounded bg-orange-500/20">CRM</span></Link></li>
+              <li><Link to="/contact" className="text-orange-400 hover:text-orange-300 font-semibold transition-colors">Start Your Project</Link></li>
+              <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing & Scope</Link></li>
+              <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
+              <li><Link to="/admin" className="text-slate-400 hover:text-slate-300 transition-colors flex items-center gap-1">Admin Portal <span className="text-[10px] font-mono px-1 rounded bg-slate-800">CRM</span></Link></li>
             </ul>
           </div>
         </div>
@@ -149,11 +148,11 @@ export const Footer: React.FC = () => {
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-1">
               <Lock className="w-3 h-3 text-emerald-400" />
-              <span>256-Bit TLS Encryption</span>
+              <span>TLS / SSL Secured</span>
             </span>
             <span className="flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5 text-orange-400" />
-              <span>Cloud Firestore Secured</span>
+              <span>Cloud Firestore Database</span>
             </span>
           </div>
         </div>
@@ -161,3 +160,4 @@ export const Footer: React.FC = () => {
     </footer>
   );
 };
+

@@ -728,7 +728,7 @@ export const AdminPage: React.FC = () => {
                   <p className="text-xs text-slate-300 leading-relaxed">{proj.short_description}</p>
 
                   <div className="flex flex-wrap gap-1.5 pt-2">
-                    {proj.technologies.map((tech) => (
+                    {(proj.technologies || []).map((tech) => (
                       <span key={tech} className="px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-[10px] text-slate-400 font-mono">
                         {tech}
                       </span>

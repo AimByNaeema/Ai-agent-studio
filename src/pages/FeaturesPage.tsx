@@ -314,7 +314,7 @@ export const FeaturesPage: React.FC = () => {
 
                 {/* Tags Footer */}
                 <div className="pt-3 border-t border-slate-800/80 flex flex-wrap gap-1.5">
-                  {card.tags.map((tag, idx) => (
+                  {(card.tags || []).map((tag, idx) => (
                     <span
                       key={idx}
                       className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 text-slate-400 border border-slate-800"

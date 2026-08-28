@@ -161,7 +161,7 @@ export interface FaqItem {
 }
 
 // ==========================================
-// Backend & Database Entity Types (Supabase)
+// Backend & Database Entity Types (Firestore)
 // ==========================================
 
 export type UserRole = 'admin' | 'staff';
@@ -224,7 +224,13 @@ export interface ProjectLeadSubmission {
   source_page?: string;
 }
 
-export type ProjectStatus = 'in_development' | 'coming_soon' | 'live' | 'archived';
+export type ProjectStatus =
+  | 'in_development'
+  | 'coming_soon'
+  | 'live'
+  | 'available_for_custom_projects'
+  | 'concept'
+  | 'archived';
 
 export interface ProjectRecord {
   id: string;
@@ -251,6 +257,8 @@ export interface ServiceRecord {
   short_description: string;
   full_description: string;
   icon_key: string;
+  key_features?: string[];
+  deliverables?: string[];
   is_available_for_custom_projects: boolean;
   sort_order: number;
   is_published: boolean;
@@ -277,4 +285,3 @@ export interface NewsletterSubscriberRecord {
   created_at: string;
   is_active: boolean;
 }
-

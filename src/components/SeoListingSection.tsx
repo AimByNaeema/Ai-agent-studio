@@ -88,7 +88,7 @@ export const SeoListingSection: React.FC = () => {
                   Conversion Boost Recommendations
                 </span>
                 <div className="space-y-2">
-                  {sample.after.improvements.map((imp, idx) => (
+                  {(sample.after?.improvements || []).map((imp, idx) => (
                     <div key={idx} className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 text-xs text-slate-300 flex items-start gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
                       <span>{imp}</span>
@@ -190,7 +190,7 @@ export const SeoListingSection: React.FC = () => {
               <div className="space-y-2">
                 <span className="text-xs font-mono uppercase text-slate-400">Features & Benefits Copy:</span>
                 <div className="space-y-2">
-                  {(viewMode === 'after' ? sample.after.bulletPoints : sample.before.bulletPoints).map(
+                  {((viewMode === 'after' ? sample.after?.bulletPoints : sample.before?.bulletPoints) || []).map(
                     (bullet, idx) => (
                       <div
                         key={idx}

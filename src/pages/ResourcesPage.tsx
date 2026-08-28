@@ -270,7 +270,7 @@ export const ResourcesPage: React.FC = () => {
                   <span className="text-[10px] font-mono text-slate-500 uppercase font-bold block">
                     Core Actionable Takeaways
                   </span>
-                  {art.takeaways.map((takeaway, idx) => (
+                  {(art.takeaways || []).map((takeaway, idx) => (
                     <div key={idx} className="flex items-start gap-2 text-xs text-slate-300">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
                       <span className="text-[11px] leading-tight">{takeaway}</span>
@@ -370,7 +370,7 @@ export const ResourcesPage: React.FC = () => {
                 <span className="text-[10px] font-mono uppercase text-slate-400 font-bold block">
                   Key Action Takeaways
                 </span>
-                {selectedArticle.takeaways.map((item: string, idx: number) => (
+                {(selectedArticle?.takeaways || []).map((item: string, idx: number) => (
                   <div key={idx} className="flex items-start gap-2 text-xs text-slate-300">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
                     <span>{item}</span>

@@ -1,377 +1,266 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   Check,
-  Zap,
-  ShieldCheck,
-  HelpCircle,
   ArrowRight,
+  ShieldCheck,
   Sparkles,
-  Calculator,
-  ChevronDown,
+  Bot,
+  Layout,
+  Layers,
+  HelpCircle,
+  Clock,
   Lock,
-  DollarSign,
-  TrendingUp
+  DollarSign
 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
-import { PRICING_PLANS } from '../data/mockData';
 import { usePageMetadata } from '../hooks/usePageMetadata';
 
 export const PricingPage: React.FC = () => {
   usePageMetadata({
-    title: 'Transparent Commercial Pricing & ROI Plans',
-    description: 'Explore transparent pricing plans for Starter, Growth, and Pro tiers. 14-day free trial with read-only scopes. Calculate your projected ROI.',
+    title: 'Pricing & Engagement Models | AI AGENT STUDIO',
+    description: 'Transparent project pricing and engagement models for custom websites, AI digital employees, and complete digital business systems.',
   });
 
-  const navigate = useNavigate();
-  const [isAnnual, setIsAnnual] = useState(true);
-  const [monthlyRevenue, setMonthlyRevenue] = useState(150000);
-  const [openFaqId, setOpenFaqId] = useState<string | null>('faq-1');
-
-  // ROI calculations based on average 12-18% revenue lift observed in trials
-  const estimatedConversionLift = 0.65; // +0.65% absolute lift
-  const projectedMonthlyNetGain = Math.round(monthlyRevenue * 0.14);
-  const projectedAnnualNetGain = projectedMonthlyNetGain * 12;
-
-  const fullComparisonMatrix = [
-    { category: 'AI Intelligence & Research', features: [
-      { name: 'Specialized AI Growth Sub-Agents', starter: '4 Core Agents', growth: 'All 8 Agents', pro: 'All 8 Agents + Custom Logic' },
-      { name: 'Active SKU Monitoring Limit', starter: 'Up to 250 SKUs', growth: 'Up to 2,500 SKUs', pro: 'Unlimited SKUs' },
-      { name: 'Global Market Whitespace Scans', starter: '2 Regions / mo', growth: 'All 6 Global Regions', pro: 'All Regions + Custom Feeds' },
-      { name: 'Competitor Review & Defect Sentiment', starter: 'Basic', growth: 'Full Multi-Store', pro: 'Deep Multi-Platform' },
-    ]},
-    { category: 'Conversion & Listing Optimization', features: [
-      { name: 'SEO & Listing Rewrites / mo', starter: '50 SKUs / mo', growth: '500 SKUs / mo', pro: 'Unlimited Automated' },
-      { name: 'Neuro-Linguistic Copywriting Engine', starter: true, growth: true, pro: true },
-      { name: 'A/B Test Variant Generation', starter: '2 variants / SKU', growth: '5 variants / SKU', pro: 'Unlimited Multi-Arm' },
-      { name: 'Non-Branded Keyword Clustering', starter: true, growth: true, pro: true },
-    ]},
-    { category: 'Marketing, Ads & Telemetry', features: [
-      { name: 'Promotional Playbook Generator', starter: '1 Campaign / mo', growth: 'Unlimited Campaigns', pro: 'Continuous Autonomous' },
-      { name: 'Ad Creative Hook & Script Formulas', starter: '10 Hooks / mo', growth: '100 Hooks / mo', pro: 'Unlimited Custom UGC' },
-      { name: 'Omnichannel Ad Channel Connections', starter: '1 Ad Account', growth: '4 Ad Accounts', pro: 'Unlimited Multi-Brand' },
-      { name: 'Real-Time Revenue Telemetry Diagnostics', starter: 'Daily Batch', growth: '15-Min Real-Time', pro: 'Real-Time Webhooks' },
-    ]},
-    { category: 'Security & Governance', features: [
-      { name: 'Human-in-the-Loop Approval Sandbox', starter: true, growth: true, pro: true },
-      { name: 'Read-Only API Scopes Guaranteed', starter: true, growth: true, pro: true },
-      { name: 'Cryptographic Audit Trail Logs', starter: '30-Day History', growth: '1-Year History', pro: 'Permanent SOC2 Vault' },
-      { name: 'Dedicated Slack Growth Strategist', starter: false, growth: 'Priority Email', pro: 'Dedicated Slack Channel' },
-    ]},
-  ];
-
-  const pricingFaqs = [
+  const packages = [
     {
-      id: 'faq-1',
-      question: 'How does the 14-day free evaluation work?',
-      answer: 'You can connect your store with read-only permissions and explore full platform capabilities without paying anything. You will receive an immediate AI growth audit and actionable recommendations. No credit card is charged during the 14-day window.',
+      id: 'starter-web',
+      name: 'Starter Business Website',
+      category: 'Web Development',
+      badge: 'Core Online Presence',
+      price: 'Starting from $1,800',
+      timeline: '2 - 3 Weeks Delivery',
+      description:
+        'A fast, modern, and responsive website designed to communicate your value proposition clearly and capture customer inquiries reliably.',
+      features: [
+        'Custom bespoke responsive design (mobile, tablet, desktop)',
+        'Sub-second page speeds with Core Web Vitals optimization',
+        'SEO-first semantic structure & Open Graph metadata',
+        'Inquiry form connected to Cloud Firestore & email alerts',
+        'Dedicated admin lead manager portal',
+        'Domain connection, SSL setup, and production deployment',
+        '14 days post-launch technical warranty & support',
+      ],
+      popular: false,
+      ctaLink: '/contact?service=web_development',
+      ctaText: 'Start Website Project',
     },
     {
-      id: 'faq-2',
-      question: 'Will the AI make changes to my live store without my knowledge?',
-      answer: 'Never. AI AGENT STUDIO is architected with strict Human-in-the-Loop governance. Every recommendation produces a visual side-by-side diff with projected revenue impact that requires your explicit one-click signoff before dispatch.',
+      id: 'custom-agent',
+      name: 'Custom AI Digital Employee',
+      category: 'AI Digital Employees',
+      badge: 'Most Popular',
+      price: 'Starting from $2,400',
+      timeline: '2 - 4 Weeks Delivery',
+      description:
+        'A specialized AI agent trained on your business knowledge to handle customer inquiries, qualify prospects, or assist daily staff workflows.',
+      features: [
+        'Custom system prompt engineering & tone calibration',
+        'Grounded on your verified menus, docs, FAQs, or catalogs',
+        'Human approval gates for sensitive operational actions',
+        'Floating website widget or messaging webhook integration',
+        'Full conversation logs and telemetry tracking in CRM',
+        'No hallucination guardrails & structured escalation paths',
+        '30 days post-launch calibration & prompt refinement',
+      ],
+      popular: true,
+      ctaLink: '/contact?service=custom_ai_agent',
+      ctaText: 'Deploy an AI Agent',
     },
     {
-      id: 'faq-3',
-      question: 'Can I change plans or cancel anytime?',
-      answer: 'Yes. You can upgrade, downgrade, or cancel your subscription at any time directly from the merchant console. If you cancel, your store remains active until the end of the billing period with zero penalties.',
-    },
-    {
-      id: 'faq-4',
-      question: 'Is my store catalog and sales data kept private?',
-      answer: 'Yes. We maintain strict enterprise isolation. Your store data is encrypted with 256-bit TLS in transit and AES-256 at rest. Your proprietary sales and catalog data is NEVER used to train public foundational AI models.',
+      id: 'complete-system',
+      name: 'Complete Digital System',
+      category: 'Full-Stack Solution',
+      badge: 'Highest Impact',
+      price: 'Starting from $3,800',
+      timeline: '4 - 6 Weeks Delivery',
+      description:
+        'A cohesive digital infrastructure combining a high-performance business website with an integrated AI digital employee and CRM workflow automation.',
+      features: [
+        'Full bespoke website engineering (all core pages)',
+        'Fully integrated 24/7 AI digital employee on storefront',
+        'Cloud Firestore database with fine-grained security rules',
+        'Admin CRM portal for lead and conversation management',
+        'Automated notifications via email, Slack, or webhook',
+        'End-to-end testing, staging sandbox & client sign-off',
+        '60 days post-launch maintenance & optimization support',
+      ],
+      popular: false,
+      ctaLink: '/contact?service=custom_digital_solution',
+      ctaText: 'Build Complete System',
     },
   ];
 
   return (
-    <div className="pt-24 pb-20 bg-slate-950 text-white">
+    <div className="pt-24 pb-20 bg-slate-950 text-white min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumbs */}
-        <Breadcrumbs items={[{ label: 'Pricing & Plans' }]} />
+        <Breadcrumbs items={[{ label: 'Pricing & Engagement Models' }]} />
 
-        {/* Page Hero */}
-        <div className="pt-6 pb-10 text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-400 text-xs font-mono font-semibold uppercase">
-            <DollarSign className="w-3.5 h-3.5" />
-            <span>Commercial Licensing</span>
+        {/* Header */}
+        <div className="pt-4 pb-14 text-center max-w-3xl mx-auto space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-300">
+            <DollarSign className="w-4 h-4 text-orange-400" />
+            <span className="font-mono text-orange-400 uppercase tracking-wider">Engagement Models</span>
+            <span className="text-slate-600">|</span>
+            <span>Transparent & Predictable</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
-            Transparent Pricing for <span className="text-orange-500">Predictable ROI</span>
+
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            Transparent Pricing. <span className="text-orange-500">Zero Hidden Fees.</span>
           </h1>
-          <p className="text-base sm:text-lg text-slate-300">
-            Start with our 14-day free trial. Scale seamlessly as your catalog expands and gross profit compounds.
+
+          <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
+            We deliver clear, itemized project scopes tailored to your business requirements. No forced monthly retainers or proprietary vendor lock-in.
           </p>
 
-          {/* Billing Interval Toggle */}
-          <div className="pt-4 flex items-center justify-center gap-3 text-xs font-medium">
-            <span className={!isAnnual ? 'text-white font-bold' : 'text-slate-400'}>
-              Monthly Billing
-            </span>
-            <button
-              onClick={() => setIsAnnual(!isAnnual)}
-              className="w-12 h-6 rounded-full bg-slate-800 p-0.5 transition-colors relative border border-slate-700 cursor-pointer"
-            >
-              <div
-                className={`w-5 h-5 rounded-full bg-orange-500 transition-transform ${
-                  isAnnual ? 'translate-x-6' : 'translate-x-0'
-                }`}
-              />
-            </button>
-            <span className={isAnnual ? 'text-white font-bold flex items-center gap-1.5' : 'text-slate-400'}>
-              <span>Annual Billing</span>
-              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold">
-                Save 20%
-              </span>
-            </span>
+          <div className="pt-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400">
+              <ShieldCheck className="w-4 h-4" />
+              <span>Full Code Ownership • No Unsolicited Markups • Fixed Scope Milestones</span>
+            </div>
           </div>
         </div>
 
-        {/* 3 Pricing Plan Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 my-10 items-stretch">
-          {PRICING_PLANS.map((plan) => {
-            const price = isAnnual ? plan.priceAnnual : plan.priceMonthly;
-            return (
-              <div
-                key={plan.id}
-                className={`p-6 sm:p-8 rounded-2xl border flex flex-col justify-between space-y-6 transition-all relative ${
-                  plan.popular
-                    ? 'bg-slate-900 border-orange-500 shadow-2xl shadow-orange-500/10'
-                    : 'bg-slate-900/80 border-slate-800 hover:border-slate-700'
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-orange-500 text-white text-[10px] font-mono font-bold uppercase tracking-wider shadow-md">
-                    Most Popular Choice
-                  </div>
-                )}
+        {/* Pricing Cards Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch text-left">
+          {packages.map((pkg) => (
+            <div
+              key={pkg.id}
+              className={`p-7 sm:p-8 rounded-2xl flex flex-col justify-between space-y-6 transition-all relative ${
+                pkg.popular
+                  ? 'bg-slate-900 border-2 border-orange-500 shadow-2xl shadow-orange-500/15'
+                  : 'bg-slate-900 border border-slate-800 hover:border-slate-700'
+              }`}
+            >
+              {pkg.popular && (
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full bg-orange-500 text-white font-mono text-[10px] font-bold uppercase tracking-wider shadow-md">
+                  {pkg.badge}
+                </div>
+              )}
 
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-white">{plan.name} Plan</h3>
-                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">{plan.description}</p>
-                  </div>
+              <div className="space-y-4">
+                <div>
+                  <span className="text-xs font-mono uppercase text-orange-400 font-semibold block">
+                    {pkg.category}
+                  </span>
+                  <h3 className="text-xl font-bold text-white tracking-tight mt-1">{pkg.name}</h3>
+                </div>
 
-                  <div className="pt-2 flex items-baseline gap-1">
-                    <span className="text-4xl font-extrabold text-white font-mono">${price}</span>
-                    <span className="text-xs text-slate-400 font-mono">/month</span>
-                  </div>
-                  <div className="text-[11px] text-slate-500 font-mono">
-                    {isAnnual ? 'Billed annually ($' + price * 12 + '/yr)' : 'Billed monthly, cancel anytime'}
-                  </div>
+                <p className="text-xs text-slate-300 leading-relaxed">{pkg.description}</p>
 
-                  <div className="space-y-2.5 pt-4 border-t border-slate-800">
-                    <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-bold block">
-                      Included Capabilities
-                    </span>
-                    {plan.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-300">
-                        <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                        <span>{feature}</span>
-                      </div>
-                    ))}
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                  <div className="text-xl font-bold text-white font-mono tracking-tight">{pkg.price}</div>
+                  <div className="text-xs text-slate-400 flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-slate-500" />
+                    <span>{pkg.timeline}</span>
                   </div>
                 </div>
 
-                <div className="pt-4">
-                  <button
-                    onClick={() => navigate(`/get-started?plan=${plan.id}&annual=${isAnnual}`)}
-                    className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                      plan.popular
-                        ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-500/25'
-                        : 'bg-slate-800 hover:bg-slate-700 text-white border border-slate-700'
-                    }`}
-                  >
-                    <span>{plan.cta}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                  <div className="text-center text-[10px] text-slate-500 font-mono mt-2">
-                    14-day free trial • No card required
-                  </div>
+                <div className="space-y-2.5 pt-2 border-t border-slate-800/80">
+                  <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider block">
+                    Included in this Scope
+                  </span>
+                  {(pkg.features || []).map((feat, idx) => (
+                    <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-300">
+                      <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <span>{feat}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-            );
-          })}
+
+              <div className="pt-4 border-t border-slate-800">
+                <Link
+                  to={pkg.ctaLink}
+                  className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    pkg.popular
+                      ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-500/25'
+                      : 'bg-slate-950 hover:bg-slate-800 border border-slate-700 text-white'
+                  }`}
+                >
+                  <span>{pkg.ctaText}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Interactive ROI Calculator */}
-        <div className="my-16 p-6 sm:p-10 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
-            <div className="space-y-1">
-              <div className="inline-flex items-center gap-2 text-orange-400 font-mono text-xs font-bold uppercase">
-                <Calculator className="w-4 h-4" />
-                <span>Interactive ROI Estimator</span>
-              </div>
-              <h2 className="text-2xl font-bold text-white">
-                Estimate Your Net Profit Expansion
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-400">
-                Adjust your current monthly store revenue to see projected profit increases from automated conversion and ROAS optimization.
+        {/* Custom Scoping Callout */}
+        <div className="mt-14 p-8 rounded-2xl bg-slate-900 border border-slate-800 text-left space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2 max-w-2xl">
+              <span className="text-xs font-mono uppercase text-orange-400 font-bold">Custom Requirements?</span>
+              <h3 className="text-2xl font-bold text-white">Bespoke Scope for Unique Business Workflows</h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Need multi-agent orchestration, complex database migrations, proprietary internal tools, or specialized third-party integrations? We provide itemized, fixed-price quotes.
               </p>
             </div>
-            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-right shrink-0">
-              <span className="text-[10px] font-mono text-slate-400 block uppercase">Projected Annual ROI</span>
-              <span className="text-2xl font-bold text-emerald-400 font-mono">
-                +${projectedAnnualNetGain.toLocaleString()}
-              </span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-            <div className="md:col-span-6 space-y-4">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-300">Monthly Store Revenue (GMV)</span>
-                <span className="font-mono font-bold text-white text-base">
-                  ${monthlyRevenue.toLocaleString()}
-                </span>
-              </div>
-              <input
-                type="range"
-                min="10000"
-                max="1000000"
-                step="10000"
-                value={monthlyRevenue}
-                onChange={(e) => setMonthlyRevenue(Number(e.target.value))}
-                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-orange-500"
-              />
-              <div className="flex items-center justify-between text-[10px] font-mono text-slate-500">
-                <span>$10,000/mo</span>
-                <span>$500,000/mo</span>
-                <span>$1,000,000+/mo</span>
-              </div>
-            </div>
-
-            <div className="md:col-span-6 grid grid-cols-2 gap-3 text-xs">
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                <span className="text-[10px] font-mono text-slate-400 uppercase">Est. Monthly Gain</span>
-                <div className="text-xl font-bold text-orange-400 font-mono">
-                  +${projectedMonthlyNetGain.toLocaleString()}
-                </div>
-                <span className="text-[10px] text-slate-500">Based on +14% blended efficiency</span>
-              </div>
-
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                <span className="text-[10px] font-mono text-slate-400 uppercase">Avg Payback Time</span>
-                <div className="text-xl font-bold text-emerald-400 font-mono">
-                  3.4 Days
-                </div>
-                <span className="text-[10px] text-slate-500">ROI exceeds Growth tier cost</span>
-              </div>
+            <div>
+              <Link
+                to="/contact"
+                className="px-7 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 font-bold text-xs text-white flex items-center gap-2 whitespace-nowrap shadow-lg shadow-orange-500/25"
+              >
+                <span>Request Custom Scope</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
           </div>
         </div>
 
-        {/* Detailed Feature Comparison Grid */}
-        <div className="my-16 space-y-6">
+        {/* Pricing FAQ */}
+        <div className="mt-16 text-left space-y-6">
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="text-xs font-mono uppercase tracking-wider text-orange-400 font-bold">
-              Feature Breakdown
-            </span>
-            <h2 className="text-2xl font-bold text-white">Full Plan Comparison Matrix</h2>
+            <span className="text-xs font-mono uppercase text-orange-400 font-bold">Pricing Questions</span>
+            <h3 className="text-2xl font-bold text-white">How Our Invoicing & Scoping Works</h3>
           </div>
 
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-slate-800 text-slate-400 font-mono uppercase text-[10px]">
-                  <th className="py-3 px-4 w-2/5">Plan Features</th>
-                  <th className="py-3 px-4 text-center">Starter ($79)</th>
-                  <th className="py-3 px-4 text-center text-orange-400 font-bold bg-orange-500/10 rounded-t-lg">
-                    Growth ($199)
-                  </th>
-                  <th className="py-3 px-4 text-center">Pro ($499)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
-                {fullComparisonMatrix.map((section, sIdx) => (
-                  <React.Fragment key={sIdx}>
-                    <tr className="bg-slate-950">
-                      <td colSpan={4} className="py-2.5 px-4 font-mono font-bold text-orange-400 text-[11px] uppercase tracking-wider">
-                        {section.category}
-                      </td>
-                    </tr>
-                    {section.features.map((feat, fIdx) => (
-                      <tr key={fIdx} className="hover:bg-slate-850/50 transition-colors">
-                        <td className="py-3 px-4 font-medium text-slate-200">
-                          {feat.name}
-                        </td>
-                        <td className="py-3 px-4 text-center text-slate-400">
-                          {typeof feat.starter === 'boolean' ? (
-                            feat.starter ? <Check className="w-4 h-4 text-emerald-400 mx-auto" /> : <span className="text-slate-600">—</span>
-                          ) : (
-                            <span className="font-mono text-[11px]">{feat.starter}</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4 text-center bg-orange-500/5 text-white font-semibold">
-                          {typeof feat.growth === 'boolean' ? (
-                            feat.growth ? <Check className="w-4 h-4 text-emerald-400 mx-auto" /> : <span className="text-slate-600">—</span>
-                          ) : (
-                            <span className="font-mono text-[11px] text-orange-400">{feat.growth}</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4 text-center text-slate-300">
-                          {typeof feat.pro === 'boolean' ? (
-                            feat.pro ? <Check className="w-4 h-4 text-emerald-400 mx-auto" /> : <span className="text-slate-600">—</span>
-                          ) : (
-                            <span className="font-mono text-[11px]">{feat.pro}</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-5xl mx-auto">
+            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+              <h4 className="text-sm font-bold text-white">How are project payments structured?</h4>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Standard projects are divided into simple milestone payments: 50% upon project kickoff and architecture approval, and 50% upon final delivery, testing sign-off, and production deployment.
+              </p>
+            </div>
 
-        {/* Pricing FAQ Accordion */}
-        <div className="my-16 max-w-3xl mx-auto space-y-6">
-          <div className="text-center space-y-1">
-            <h3 className="text-2xl font-bold text-white">Frequently Asked Pricing Questions</h3>
-            <p className="text-xs sm:text-sm text-slate-400">
-              Clear answers to help you select the ideal tier for your store.
-            </p>
-          </div>
+            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+              <h4 className="text-sm font-bold text-white">Are there ongoing subscription fees?</h4>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                No compulsory agency retainers. You only pay for standard third-party infrastructure (such as your domain or cloud usage at cost), and you own your code outright.
+              </p>
+            </div>
 
-          <div className="space-y-3">
-            {pricingFaqs.map((faq) => {
-              const isOpen = openFaqId === faq.id;
-              return (
-                <div
-                  key={faq.id}
-                  className="rounded-xl bg-slate-900 border border-slate-800 overflow-hidden"
-                >
-                  <button
-                    onClick={() => setOpenFaqId(isOpen ? null : faq.id)}
-                    className="w-full p-4 text-left flex items-center justify-between text-xs sm:text-sm font-semibold text-white hover:text-orange-400 transition-colors"
-                  >
-                    <span>{faq.question}</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180 text-orange-400' : 'text-slate-500'}`} />
-                  </button>
-                  {isOpen && (
-                    <div className="px-4 pb-4 text-xs text-slate-400 leading-relaxed border-t border-slate-800/80 pt-3">
-                      {faq.answer}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+              <h4 className="text-sm font-bold text-white">What is included in the post-launch warranty?</h4>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Every project includes complimentary post-launch support covering bug fixes, edge-case resolution, and prompt calibration to guarantee everything runs smoothly.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+              <h4 className="text-sm font-bold text-white">Can I start with a website and add an AI agent later?</h4>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Yes. Our codebases are designed modularly. You can launch your website first, and we can seamlessly integrate an AI digital employee whenever you are ready.
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Bottom CTA */}
-        <div className="p-8 rounded-2xl bg-gradient-to-r from-slate-900 to-orange-950/40 border border-orange-500/30 text-center space-y-4">
-          <h3 className="text-2xl font-bold text-white">Start Your 14-Day Free Evaluation</h3>
-          <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto">
-            Zero commitment. Read-only scopes. Full access to all 8 specialized growth agents.
+        <div className="pt-16 pb-4 text-center space-y-4">
+          <h3 className="text-2xl font-bold text-white">Have a Project in Mind?</h3>
+          <p className="text-sm text-slate-300 max-w-xl mx-auto">
+            Contact us today for a free discovery consultation and itemized project estimate.
           </p>
-          <button
-            onClick={() => navigate('/get-started')}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-orange-500 hover:bg-orange-600 font-semibold text-sm text-white shadow-lg shadow-orange-500/25 transition-all cursor-pointer"
-          >
-            <span>Start Free Evaluation</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+          <div className="pt-2 flex justify-center">
+            <Link
+              to="/contact"
+              className="px-8 py-3.5 rounded-xl bg-orange-500 hover:bg-orange-600 font-bold text-sm text-white shadow-lg shadow-orange-500/25 flex items-center gap-2"
+            >
+              <span>Request a Quote</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </div>
     </div>

@@ -66,6 +66,16 @@ export const INITIAL_SERVICES: ServiceRecord[] = [
     full_description:
       'We build proprietary, single-purpose and multi-agent AI systems designed around your proprietary business workflows, customer interactions, and data infrastructure. Available for custom client projects.',
     icon_key: 'Bot',
+    key_features: [
+      'Grounded in verified business documents',
+      'Human-in-the-loop approval gates',
+      '24/7 customer and staff support workflows',
+    ],
+    deliverables: [
+      'Custom LLM Prompt Architecture',
+      'Vector Search & RAG Pipeline',
+      'Management Supervisor Dashboard',
+    ],
     is_available_for_custom_projects: true,
     sort_order: 1,
     is_published: true,
@@ -81,6 +91,16 @@ export const INITIAL_SERVICES: ServiceRecord[] = [
     full_description:
       'From modern brand storefronts and SaaS platforms to dynamic customer dashboards and high-converting landing pages — engineered with clean code, sub-second performance, and responsive mobile precision.',
     icon_key: 'Layout',
+    key_features: [
+      'Sub-second load times (<1.0s FCP)',
+      '100% mobile-first responsive precision',
+      'Semantic SEO markup and meta tags',
+    ],
+    deliverables: [
+      'Vite & React Full-Stack Application',
+      'Tailwind CSS Design System',
+      'Cloud Run or Firebase Hosting Deployment',
+    ],
     is_available_for_custom_projects: true,
     sort_order: 2,
     is_published: true,
@@ -96,6 +116,16 @@ export const INITIAL_SERVICES: ServiceRecord[] = [
     full_description:
       'End-to-end commerce engineering spanning storefront optimization, automated listing enhancements, margin whitespace discovery, ad creative playbooks, and conversion rate optimization.',
     icon_key: 'ShoppingBag',
+    key_features: [
+      'Conversion-optimized product pages',
+      'Automated catalog SEO enhancements',
+      'Market opportunity & margin scanning',
+    ],
+    deliverables: [
+      'Custom Storefront & Checkout Integration',
+      'Catalog Management & Search Filters',
+      'Telemetry & Conversion Analytics',
+    ],
     is_available_for_custom_projects: true,
     sort_order: 3,
     is_published: true,
@@ -111,6 +141,16 @@ export const INITIAL_SERVICES: ServiceRecord[] = [
     full_description:
       'Eliminate manual operational drag with intelligent document processing, multi-channel lead routing, automated data reconciliation, and proactive decision triggers.',
     icon_key: 'Zap',
+    key_features: [
+      'Inbound lead qualification and routing',
+      'Automated document extraction and sync',
+      'CRM and webhook pipeline triggers',
+    ],
+    deliverables: [
+      'Multi-Step Automated Logic Engine',
+      'API Webhooks & Third-Party Adapters',
+      'Error Handling & Fallback Alerting',
+    ],
     is_available_for_custom_projects: true,
     sort_order: 4,
     is_published: true,
@@ -126,6 +166,16 @@ export const INITIAL_SERVICES: ServiceRecord[] = [
     full_description:
       'Tailored digital systems, API middleware, reporting control centers, and secure backends built specifically for your team’s operational requirements.',
     icon_key: 'Layers',
+    key_features: [
+      'Role-based access control (RBAC)',
+      'Google Cloud Firestore persistence',
+      'Bespoke operational dashboards',
+    ],
+    deliverables: [
+      'Dedicated Admin Portal & CRM Tools',
+      'Firestore Security Rules Architecture',
+      'Complete Codebase Transfer & Ownership',
+    ],
     is_available_for_custom_projects: true,
     sort_order: 5,
     is_published: true,

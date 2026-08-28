@@ -247,7 +247,7 @@ export const PlatformPage: React.FC = () => {
                     Key Performance Benefits
                   </span>
                   <div className="space-y-2">
-                    {activeCapability.keyBenefits.map((benefit, idx) => (
+                    {(activeCapability?.keyBenefits || []).map((benefit, idx) => (
                       <div key={idx} className="flex items-center gap-2 text-xs text-slate-200">
                         <Check className="w-4 h-4 text-emerald-400 shrink-0" />
                         <span>{benefit}</span>

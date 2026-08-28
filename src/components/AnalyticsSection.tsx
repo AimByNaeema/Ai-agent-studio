@@ -151,8 +151,8 @@ export const AnalyticsSection: React.FC = () => {
             {/* Clean SVG Trend Visualizer */}
             <div className="pt-4 pb-2">
               <div className="h-44 w-full flex items-end gap-3 sm:gap-6 border-b border-slate-800 pb-2">
-                {data.chartData.map((item, idx) => {
-                  const maxRevenue = Math.max(...data.chartData.map(d => d.revenue));
+                {(data.chartData || []).map((item, idx) => {
+                  const maxRevenue = Math.max(...(data.chartData || []).map(d => d.revenue), 1);
                   const heightPercent = (item.revenue / maxRevenue) * 100;
                   return (
                     <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
@@ -176,7 +176,7 @@ export const AnalyticsSection: React.FC = () => {
                 Top Performing Catalog SKUs
               </div>
               <div className="space-y-2">
-                {data.topProducts.map((prod, idx) => (
+                {(data.topProducts || []).map((prod, idx) => (
                   <div
                     key={idx}
                     className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs"

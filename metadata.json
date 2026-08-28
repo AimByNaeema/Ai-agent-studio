@@ -1,6 +1,6 @@
 {
   "name": "AI AGENT STUDIO",
-  "description": "AI Agents & Digital Solutions Built for Modern Businesses. We build intelligent AI agents, professional websites, and custom digital systems designed around the specific needs of each business.",
+  "description": "AI Digital Employees & Websites Built for Modern Businesses. We build custom AI agents, professional websites, ecommerce systems, automation workflows, and digital tools designed around the needs of each business.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
