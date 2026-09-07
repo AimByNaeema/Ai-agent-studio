@@ -1,3 +1,5 @@
+import { verifyAdminAuth } from '../_lib/verifyAdminAuth.js';
+
 // Vercel Serverless Function: /api/agent/lead-draft
 //
 // Drafts a reply to a REAL contact-form lead. The lead's fields and the
@@ -23,7 +25,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { lead, services } = req.body || {};
+  const authResult = await verifyAdminAuth(req); if (!authResult.ok) { return res.status(authResult.status).json({ error: authResult.error }); } const { lead, services } = req.body || {};
   if (!lead || typeof lead !== 'object' || !lead.full_name || !lead.message) {
     return res.status(400).json({ error: 'A lead object with at least full_name and message is required.' });
   }
