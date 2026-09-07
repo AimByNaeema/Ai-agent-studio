@@ -95,7 +95,7 @@ async function callGemini(trimmedMessages, services) {
     return { error: 'GEMINI_API_KEY is not set on the server yet.', status: 500 };
   }
 
-  const model = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+  const model = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
 
   // Gemini uses "user"/"model" roles and a single "contents" array.
   const contents = trimmedMessages.map((m) => ({
