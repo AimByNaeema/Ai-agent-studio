@@ -110,9 +110,9 @@ export interface SeoScanResponse {
  * persistSeoFindings() to save it after the owner has seen it.
  */
 export async function runSeoScan(baseUrl: string, paths?: string[]): Promise<SeoScanResponse> {
-  const res = await fetch('/api/agent/seo-scan', {
+  const idToken = auth.currentUser ? await auth.currentUser.getIdToken() : null; if (!idToken) { throw new Error('You must be signed in as an admin to run a scan.'); } const res = await fetch('/api/agent/seo-scan', {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', authorization: `Bearer ${idToken}` },
     body: JSON.stringify({ baseUrl, paths }),
   });
   const data = await res.json();
@@ -247,9 +247,9 @@ export async function generateLeadDraft(
   lead: ProjectLead,
   services: ServiceRecord[]
 ): Promise<{ draft_message: string; evidence: string; model_used: string }> {
-  const res = await fetch('/api/agent/lead-draft', {
+  const idToken = auth.currentUser ? await auth.currentUser.getIdToken() : null; if (!idToken) { throw new Error('You must be signed in as an admin to generate a draft.'); } const res = await fetch('/api/agent/lead-draft', {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', authorization: `Bearer ${idToken}` },
     body: JSON.stringify({ lead, services }),
   });
   const data = await res.json();
