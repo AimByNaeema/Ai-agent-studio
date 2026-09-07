@@ -285,3 +285,97 @@ export interface NewsletterSubscriberRecord {
   created_at: string;
   is_active: boolean;
 }
+
+// ==========================================
+// AI Agent — Unified SEO / Support / Lead-Draft Agent
+//
+// This agent is human-supervised: it inspects, analyzes, drafts, and
+// recommends. It never publishes changes, contacts external parties, runs
+// bulk operations, or makes a binding business commitment on its own — every
+// row below only becomes "approved" through an explicit owner action in the
+// Admin Control Center.
+// ==========================================
+
+export type AgentFindingCategory =
+  | 'meta_tags'
+  | 'headings'
+  | 'broken_links'
+  | 'crawlability'
+  | 'search_console'
+  | 'analytics';
+
+export type AgentFindingSeverity = 'info' | 'low' | 'medium' | 'high';
+
+export type AgentFindingStatus = 'new' | 'approved' | 'dismissed';
+
+// data_source is the anti-fabrication guardrail: every finding must say
+// exactly where its evidence came from. 'live_page_fetch' = we actually
+// fetched the real page/route just now. 'unverified' = the data this
+// finding would need (e.g. Search Console rankings) is not connected, so
+// nothing is claimed about it beyond "not verified".
+export type AgentDataSource = 'live_page_fetch' | 'unverified';
+
+export interface AgentFinding {
+  id: string;
+  run_id: string;
+  category: AgentFindingCategory;
+  page_url: string;
+  finding: string;
+  evidence: string;
+  recommendation: string;
+  severity: AgentFindingSeverity;
+  data_source: AgentDataSource;
+  status: AgentFindingStatus;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
+  created_at: string;
+}
+
+export type AgentDraftStatus = 'draft' | 'approved' | 'rejected' | 'marked_sent';
+
+export interface AgentLeadDraft {
+  id: string;
+  lead_id: string;
+  lead_email: string;
+  lead_name: string;
+  draft_message: string;
+  evidence: string;
+  model_used: string;
+  status: AgentDraftStatus;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
+  created_at: string;
+}
+
+export type AgentActionType =
+  | 'seo_scan_run'
+  | 'finding_approved'
+  | 'finding_dismissed'
+  | 'lead_draft_generated'
+  | 'lead_draft_approved'
+  | 'lead_draft_rejected'
+  | 'lead_draft_marked_sent';
+
+export interface AgentActionLogEntry {
+  id: string;
+  action: AgentActionType;
+  actor: 'agent' | 'owner';
+  target_id?: string | null;
+  summary: string;
+  evidence?: string | null;
+  created_at: string;
+}
+
+export interface AgentChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface AgentChatSession {
+  id: string;
+  provider: 'claude' | 'gemini';
+  messages: AgentChatMessage[];
+  page_url: string;
+  started_at: string;
+  updated_at: string;
+}
