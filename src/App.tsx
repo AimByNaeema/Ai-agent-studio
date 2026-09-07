@@ -9,6 +9,7 @@ import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
 import { ToastNotification } from './components/Modals';
+import ChatWidget from './components/ChatWidget';
 
 // Dedicated Page Components
 import { HomePage } from './pages/HomePage';
@@ -65,6 +66,9 @@ export default function App() {
           message={toastMessage}
           onClose={() => setToastMessage(null)}
         />
+
+        {/* Floating AI chat widget (visible on every page) */}
+        <ChatWidget />
       </div>
     </BrowserRouter>
   );
