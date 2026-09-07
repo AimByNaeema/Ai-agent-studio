@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { usePageMetadata } from '../hooks/usePageMetadata';
+import { AgentControlCenter } from '../components/AgentControlCenter';
 import {
   ProjectLead,
   LeadStatus,
@@ -85,7 +86,7 @@ export const AdminPage: React.FC = () => {
   const isAuthenticated = Boolean(currentUser || isDemoAuthenticated);
 
   // Tabs: 'leads' | 'projects' | 'services' | 'categories' | 'subscribers' | 'database'
-  const [activeTab, setActiveTab] = useState<'leads' | 'projects' | 'services' | 'categories' | 'subscribers' | 'database'>('leads');
+  const [activeTab, setActiveTab] = useState<'leads' | 'projects' | 'services' | 'categories' | 'subscribers' | 'agent' | 'database'>('leads');
 
   // Leads state
   const [leads, setLeads] = useState<ProjectLead[]>([]);
@@ -432,6 +433,18 @@ export const AdminPage: React.FC = () => {
           >
             <User className="w-3.5 h-3.5" />
             <span>Subscribers ({subscribers.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('agent')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === 'agent'
+                ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20'
+                : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            <Bot className="w-3.5 h-3.5" />
+            <span>AI Agent</span>
           </button>
 
           <button
@@ -830,6 +843,13 @@ export const AdminPage: React.FC = () => {
               )}
             </div>
           </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* TAB 6: AI AGENT CONTROL CENTER */}
+        {/* ========================================================================= */}
+        {activeTab === 'agent' && (
+          <AgentControlCenter leads={leads} services={services} showToast={showToast} />
         )}
 
         {/* ========================================================================= */}
