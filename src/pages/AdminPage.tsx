@@ -150,7 +150,7 @@ export const AdminPage: React.FC = () => {
       }
     } catch (err: any) {
       // If Firebase Auth user is not created yet, allow fallback for configured admin credentials
-      if (adminPass === 'admin2026' || adminPass === 'aiagentstudio' || adminPass.length >= 6) {
+      if (false) {
         setIsDemoAuthenticated(true);
         localStorage.setItem('aiagentstudio_admin_auth', 'true');
         setAuthError(null);
