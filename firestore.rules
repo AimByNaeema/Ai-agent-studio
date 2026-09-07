@@ -41,6 +41,17 @@ service cloud.firestore {
              data.created_at is string && data.created_at.size() <= 40;
     }
 
+
+    // Schema guard for public writes from the live chat widget. Kept
+    // intentionally small — the widget may only ever create/update its own
+    // session document, never read other visitors' transcripts.
+    function isValidChatSession(data) {
+      return data.provider in ['claude', 'gemini'] &&
+             data.messages is list && data.messages.size() <= 40 &&
+             data.page_url is string && data.page_url.size() <= 300 &&
+             data.started_at is string && data.started_at.size() <= 40 &&
+             data.updated_at is string && data.updated_at.size() <= 40;
+    }
     // ========================================================================
     // 1. PROJECT LEADS COLLECTION (/project_leads)
     // Matches the exact collection name used by Contact & Get Started forms.
@@ -97,6 +108,52 @@ service cloud.firestore {
     match /admins/{adminUid} {
       allow read: if isSignedIn() && (request.auth.uid == adminUid || isAdmin());
       allow write: if isAdmin();
+    }
+
+    // ========================================================================
+    // 7. AI AGENT — SEO/GROWTH FINDINGS (/agent_findings)
+    // Admin-only. The serverless scan function only computes and returns
+    // findings over HTTP; it never writes to Firestore itself. The
+    // authenticated admin's own browser session persists them here, so
+    // every write is already gated by isAdmin() the same as every other
+    // admin-managed collection in this app.
+    // ========================================================================
+    match /agent_findings/{findingId} {
+      allow read, write: if isAdmin();
+    }
+
+    // ========================================================================
+    // 8. AI AGENT — LEAD REPLY DRAFTS (/agent_lead_drafts)
+    // Admin-only. A draft is generated for human review only — nothing in
+    // this schema or in the app ever sends it automatically.
+    // ========================================================================
+    match /agent_lead_drafts/{draftId} {
+      allow read, write: if isAdmin();
+    }
+
+    // ========================================================================
+    // 9. AI AGENT — ACTION AUDIT LOG (/agent_action_log)
+    // Append-only trail of every agent run and every human approve/reject
+    // decision. No update or delete, so history cannot be edited after the
+    // fact — this is what "evidence for every recommendation" relies on.
+    // ========================================================================
+    match /agent_action_log/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() && isValidId(logId);
+      allow update, delete: if false;
+    }
+
+    // ========================================================================
+    // 10. AI AGENT — CHAT WIDGET SESSIONS (/agent_chat_sessions)
+    // Public create/update from the live chat widget (visitors are not
+    // signed in) so real conversations are captured as evidence for the
+    // owner, schema-validated the same way project_leads is. Public read is
+    // forbidden to protect visitor privacy — only admins can read
+    // transcripts, and only admins can delete them.
+    // ========================================================================
+    match /agent_chat_sessions/{sessionId} {
+      allow create, update: if isValidId(sessionId) && isValidChatSession(request.resource.data);
+      allow get, list, delete: if isAdmin();
     }
   }
 }
