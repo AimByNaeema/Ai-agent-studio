@@ -1,3 +1,5 @@
+import { verifyAdminAuth } from '../_lib/verifyAdminAuth.js';
+
 // Vercel Serverless Function: /api/agent/seo-scan
 //
 // Real on-page SEO scan of THIS SITE'S OWN live routes. No mock data, no
@@ -157,7 +159,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { baseUrl, paths } = req.body || {};
+  const authResult = await verifyAdminAuth(req); if (!authResult.ok) { return res.status(authResult.status).json({ error: authResult.error }); } const { baseUrl, paths } = req.body || {};
   if (!baseUrl || typeof baseUrl !== 'string' || !/^https?:\/\//i.test(baseUrl)) {
     return res.status(400).json({ error: 'baseUrl is required and must be a full URL, e.g. https://your-site.vercel.app' });
   }
