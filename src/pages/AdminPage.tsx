@@ -55,8 +55,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  User as FirebaseUser,
-} from 'firebase/auth';
+  User as FirebaseUser, } from 'firebase/auth';
 
 export const AdminPage: React.FC = () => {
   usePageMetadata({
@@ -68,7 +67,7 @@ export const AdminPage: React.FC = () => {
   const [adminEmail, setAdminEmail] = useState('aiagentstudioo@gmail.com');
   const [adminPass, setAdminPass] = useState('');
   const [authError, setAuthError] = useState<string | null>(null);
-  const [isAuthLoading, setIsAuthLoading] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(false); const [setupEmail, setSetupEmail] = useState('aiagentstudioo@gmail.com'); const [setupPassword, setSetupPassword] = useState(''); const [setupSecret, setSetupSecret] = useState(''); const [isSetupLoading, setIsSetupLoading] = useState(false); const [setupMessage, setSetupMessage] = useState<string | null>(null); const [setupSuccess, setSetupSuccess] = useState(false);
 
   // Monitor Firebase Auth state
   useEffect(() => {
@@ -83,7 +82,7 @@ export const AdminPage: React.FC = () => {
     return localStorage.getItem('aiagentstudio_admin_auth') === 'true';
   });
 
-  const isAuthenticated = Boolean(currentUser || isDemoAuthenticated);
+  const isAuthenticated = Boolean(currentUser);
 
   // Tabs: 'leads' | 'projects' | 'services' | 'categories' | 'subscribers' | 'database'
   const [activeTab, setActiveTab] = useState<'leads' | 'projects' | 'services' | 'categories' | 'subscribers' | 'agent' | 'database'>('leads');
@@ -145,19 +144,18 @@ export const AdminPage: React.FC = () => {
     try {
       if (adminEmail && adminPass) {
         await signInWithEmailAndPassword(auth, adminEmail.trim(), adminPass);
-        setIsDemoAuthenticated(true);
+        
         localStorage.setItem('aiagentstudio_admin_auth', 'true');
       }
     } catch (err: any) {
       // If Firebase Auth user is not created yet, allow fallback for configured admin credentials
       if (false) {
-        setIsDemoAuthenticated(true);
+        
         localStorage.setItem('aiagentstudio_admin_auth', 'true');
         setAuthError(null);
       } else {
         setAuthError('Invalid credentials. Please verify administrator email and passkey.');
-      }
-    } finally {
+      }    } finally {
       setIsAuthLoading(false);
     }
   };
@@ -168,8 +166,8 @@ export const AdminPage: React.FC = () => {
     } catch {
       // ignore
     }
-    setIsDemoAuthenticated(false);
-    localStorage.removeItem('aiagentstudio_admin_auth');
+    
+    
   };
 
   const handleStatusChange = async (leadId: string, newStatus: LeadStatus) => {
