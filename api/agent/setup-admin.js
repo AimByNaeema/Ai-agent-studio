@@ -81,7 +81,16 @@ export default async function handler(req, res) {
           error: 'An admin account already exists for this email. Setup is already complete - just sign in normally.',
         });
       }
-      console.error('Admin setup signUp error:', data);
+      // TEMPORARY DIAGNOSTIC LOGGING (server-side only, never sent to the browser):
+      // logs only Google's own error metadata for this failed signUp call - no
+      // email, password, setupSecret, API key, tokens, or request body are logged.
+      console.error('Admin setup signUp error:', {
+        httpStatus: signUpRes.status,
+        firebaseErrorCode: data?.error?.code,
+        firebaseErrorMessage: data?.error?.message,
+        firebaseErrorStatus: data?.error?.status,
+        firebaseErrorDetails: data?.error?.errors,
+      });
       return res.status(502).json({ error: 'Could not create the admin account. Please try again.' });
     }
 
