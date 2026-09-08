@@ -77,12 +77,8 @@ export const AdminPage: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  // Quick fallback session check for local dev testing
-  const [isDemoAuthenticated, setIsDemoAuthenticated] = useState(() => {
-    return localStorage.getItem('aiagentstudio_admin_auth') === 'true';
-  });
-
   const isAuthenticated = Boolean(currentUser);
+  const [showSetup, setShowSetup] = useState(false);
 
   // Tabs: 'leads' | 'projects' | 'services' | 'categories' | 'subscribers' | 'database'
   const [activeTab, setActiveTab] = useState<'leads' | 'projects' | 'services' | 'categories' | 'subscribers' | 'agent' | 'database'>('leads');
@@ -144,18 +140,10 @@ export const AdminPage: React.FC = () => {
     try {
       if (adminEmail && adminPass) {
         await signInWithEmailAndPassword(auth, adminEmail.trim(), adminPass);
-        
-        localStorage.setItem('aiagentstudio_admin_auth', 'true');
       }
     } catch (err: any) {
-      // If Firebase Auth user is not created yet, allow fallback for configured admin credentials
-      if (false) {
-        
-        localStorage.setItem('aiagentstudio_admin_auth', 'true');
-        setAuthError(null);
-      } else {
-        setAuthError('Invalid credentials. Please verify administrator email and passkey.');
-      }    } finally {
+      setAuthError('Invalid credentials. Please verify administrator email and passkey.');
+    } finally {
       setIsAuthLoading(false);
     }
   };
@@ -166,8 +154,33 @@ export const AdminPage: React.FC = () => {
     } catch {
       // ignore
     }
-    
-    
+  };
+
+  const handleSetupAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSetupLoading(true);
+    setSetupMessage(null);
+    try {
+      const res = await fetch('/api/agent/setup-admin', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email: setupEmail.trim(), password: setupPassword, setupSecret }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSetupSuccess(false);
+        setSetupMessage(data.error || 'Could not create the admin account.');
+        return;
+      }
+      setSetupSuccess(true);
+      setSetupMessage('Admin account created. Signing you in...');
+      await signInWithEmailAndPassword(auth, setupEmail.trim(), setupPassword);
+    } catch (err) {
+      setSetupSuccess(false);
+      setSetupMessage('Something went wrong creating the admin account.');
+    } finally {
+      setIsSetupLoading(false);
+    }
   };
 
   const handleStatusChange = async (leadId: string, newStatus: LeadStatus) => {
@@ -299,7 +312,6 @@ export const AdminPage: React.FC = () => {
                 />
                 <Key className="w-4 h-4 text-slate-500 absolute right-3 top-3" />
               </div>
-              <span className="text-[10px] text-slate-500 block">Tip: Demo passkey is <code className="text-orange-400 font-mono">admin2026</code></span>
             </div>
 
             {authError && (
@@ -317,6 +329,72 @@ export const AdminPage: React.FC = () => {
               {isAuthLoading ? 'Authenticating...' : 'Sign In to Admin Portal'}
             </button>
           </form>
+
+          <div className="pt-2 border-t border-slate-800/80">
+            <button
+              type="button"
+              onClick={() => setShowSetup((v) => !v)}
+              className="text-[11px] text-slate-500 hover:text-orange-400 transition-colors cursor-pointer"
+            >
+              {showSetup ? 'Hide first-time setup' : 'First-time setup: create the admin account'}
+            </button>
+
+            {showSetup && (
+              <form onSubmit={handleSetupAdmin} className="mt-3 space-y-3 text-left p-3 rounded-lg bg-slate-950 border border-slate-800">
+                <p className="text-[10px] text-slate-500">
+                  Run this once to create the real admin account. Requires the setup code configured by the site owner in Vercel Environment Variables.
+                </p>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-300 block">Admin Email</label>
+                  <input
+                    type="email"
+                    required
+                    value={setupEmail}
+                    onChange={(e) => setSetupEmail(e.target.value)}
+                    className="w-full px-3 py-2 text-xs text-white bg-slate-900 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-300 block">New Password</label>
+                  <input
+                    type="password"
+                    required
+                    minLength={8}
+                    placeholder="At least 8 characters"
+                    value={setupPassword}
+                    onChange={(e) => setSetupPassword(e.target.value)}
+                    className="w-full px-3 py-2 text-xs text-white bg-slate-900 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-300 block">Setup Code</label>
+                  <input
+                    type="password"
+                    required
+                    placeholder="ADMIN_SETUP_SECRET"
+                    value={setupSecret}
+                    onChange={(e) => setSetupSecret(e.target.value)}
+                    className="w-full px-3 py-2 text-xs text-white bg-slate-900 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                  />
+                </div>
+
+                {setupMessage && (
+                  <div className={`p-2.5 rounded-lg border text-xs flex items-center gap-2 ${setupSuccess ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-rose-500/10 border-rose-500/30 text-rose-300'}`}>
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>{setupMessage}</span>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isSetupLoading}
+                  className="w-full py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 font-bold text-xs text-white transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {isSetupLoading ? 'Creating account...' : 'Create Admin Account'}
+                </button>
+              </form>
+            )}
+          </div>
 
           <div className="pt-2 text-[11px] text-slate-500 flex items-center justify-center gap-1.5 border-t border-slate-800/80">
             <Lock className="w-3 h-3 text-emerald-400" />
