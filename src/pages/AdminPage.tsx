@@ -23,8 +23,7 @@ import {
   FileText,
   User,
   DollarSign,
-  Tag,
-  Key
+  Tag
 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { usePageMetadata } from '../hooks/usePageMetadata';
@@ -52,10 +51,18 @@ import {
   auth,
 } from '../lib/firebase';
 import {
-  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
   signOut,
   onAuthStateChanged,
   User as FirebaseUser, } from 'firebase/auth';
+
+// Only these Google accounts may reach the admin dashboard. This mirrors the
+// server-side allowlist in api/_lib/verifyAdminAuth.js and firestore.rules'
+// isAdmin() - this client-side check is a UX convenience only, never the
+// actual security boundary. Every protected API call and every Firestore
+// read/write is independently re-checked server-side against the same list.
+const ADMIN_EMAILS = ['aimbynaeema@gmail.com', 'aiagentstudioo@gmail.com'];
 
 export const AdminPage: React.FC = () => {
   usePageMetadata({
@@ -64,10 +71,8 @@ export const AdminPage: React.FC = () => {
   });
 
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
-  const [adminEmail, setAdminEmail] = useState('aiagentstudioo@gmail.com');
-  const [adminPass, setAdminPass] = useState('');
   const [authError, setAuthError] = useState<string | null>(null);
-  const [isAuthLoading, setIsAuthLoading] = useState(false); const [setupEmail, setSetupEmail] = useState('aiagentstudioo@gmail.com'); const [setupPassword, setSetupPassword] = useState(''); const [setupSecret, setSetupSecret] = useState(''); const [isSetupLoading, setIsSetupLoading] = useState(false); const [setupMessage, setSetupMessage] = useState<string | null>(null); const [setupSuccess, setSetupSuccess] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
 
   // Monitor Firebase Auth state
   useEffect(() => {
@@ -77,8 +82,9 @@ export const AdminPage: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  const isAuthenticated = Boolean(currentUser);
-  const [showSetup, setShowSetup] = useState(false);
+  // Authenticated AND on the admin allowlist. See ADMIN_EMAILS note above -
+  // real enforcement is server-side; this only controls what the client renders.
+  const isAuthenticated = Boolean(currentUser) && ADMIN_EMAILS.includes(currentUser?.email ?? '');
 
   // Tabs: 'leads' | 'projects' | 'services' | 'categories' | 'subscribers' | 'database'
   const [activeTab, setActiveTab] = useState<'leads' | 'projects' | 'services' | 'categories' | 'subscribers' | 'agent' | 'database'>('leads');
@@ -132,17 +138,23 @@ export const AdminPage: React.FC = () => {
     }
   }, [isAuthenticated]);
 
-  const handleAdminLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGoogleSignIn = async () => {
     setIsAuthLoading(true);
     setAuthError(null);
-
     try {
-      if (adminEmail && adminPass) {
-        await signInWithEmailAndPassword(auth, adminEmail.trim(), adminPass);
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const signedInEmail = result.user.email ?? '';
+      if (!ADMIN_EMAILS.includes(signedInEmail)) {
+        // Not an authorized admin account - sign back out immediately so no
+        // session is left behind, and never grant dashboard access.
+        await signOut(auth);
+        setAuthError('This Google account is not authorized for admin access.');
       }
     } catch (err: any) {
-      setAuthError('Invalid credentials. Please verify administrator email and passkey.');
+      if (err?.code !== 'auth/popup-closed-by-user') {
+        setAuthError('Google sign-in failed. Please try again.');
+      }
     } finally {
       setIsAuthLoading(false);
     }
@@ -153,33 +165,6 @@ export const AdminPage: React.FC = () => {
       await signOut(auth);
     } catch {
       // ignore
-    }
-  };
-
-  const handleSetupAdmin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSetupLoading(true);
-    setSetupMessage(null);
-    try {
-      const res = await fetch('/api/agent/setup-admin', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ email: setupEmail.trim(), password: setupPassword, setupSecret }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setSetupSuccess(false);
-        setSetupMessage(data.error || 'Could not create the admin account.');
-        return;
-      }
-      setSetupSuccess(true);
-      setSetupMessage('Admin account created. Signing you in...');
-      await signInWithEmailAndPassword(auth, setupEmail.trim(), setupPassword);
-    } catch (err) {
-      setSetupSuccess(false);
-      setSetupMessage('Something went wrong creating the admin account.');
-    } finally {
-      setIsSetupLoading(false);
     }
   };
 
@@ -283,36 +268,25 @@ export const AdminPage: React.FC = () => {
             <p className="text-xs text-slate-400">Restricted Administration & CRM Portal</p>
           </div>
 
-          <form onSubmit={handleAdminLogin} className="space-y-4 text-left">
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300 block">Admin Email</label>
-              <div className="relative">
-                <input
-                  type="email"
-                  required
-                  placeholder="aiagentstudioo@gmail.com"
-                  value={adminEmail}
-                  onChange={(e) => setAdminEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs text-white bg-slate-950 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none placeholder:text-slate-600"
-                />
-                <Mail className="w-4 h-4 text-slate-500 absolute right-3 top-3" />
-              </div>
-            </div>
+          <div className="space-y-4 text-left">
+            <p className="text-xs text-slate-400 text-center">
+              Sign in with an authorized administrator Google account.
+            </p>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300 block">Admin Access Passkey</label>
-              <div className="relative">
-                <input
-                  type="password"
-                  required
-                  placeholder="Enter administrator passkey..."
-                  value={adminPass}
-                  onChange={(e) => setAdminPass(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs text-white bg-slate-950 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none placeholder:text-slate-600"
-                />
-                <Key className="w-4 h-4 text-slate-500 absolute right-3 top-3" />
-              </div>
-            </div>
+            <button
+              type="button"
+              onClick={handleGoogleSignIn}
+              disabled={isAuthLoading}
+              className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 font-bold text-xs text-slate-900 transition-all shadow-md cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5"
+            >
+              <svg className="w-4 h-4 shrink-0" viewBox="0 0 48 48" aria-hidden="true">
+                <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z" />
+                <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z" />
+                <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z" />
+                <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z" />
+              </svg>
+              {isAuthLoading ? 'Signing in...' : 'Sign in with Google'}
+            </button>
 
             {authError && (
               <div className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
@@ -321,79 +295,9 @@ export const AdminPage: React.FC = () => {
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={isAuthLoading}
-              className="w-full py-2.5 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 font-bold text-xs text-white transition-all shadow-md shadow-orange-500/20 cursor-pointer disabled:opacity-50"
-            >
-              {isAuthLoading ? 'Authenticating...' : 'Sign In to Admin Portal'}
-            </button>
-          </form>
-
-          <div className="pt-2 border-t border-slate-800/80">
-            <button
-              type="button"
-              onClick={() => setShowSetup((v) => !v)}
-              className="text-[11px] text-slate-500 hover:text-orange-400 transition-colors cursor-pointer"
-            >
-              {showSetup ? 'Hide first-time setup' : 'First-time setup: create the admin account'}
-            </button>
-
-            {showSetup && (
-              <form onSubmit={handleSetupAdmin} className="mt-3 space-y-3 text-left p-3 rounded-lg bg-slate-950 border border-slate-800">
-                <p className="text-[10px] text-slate-500">
-                  Run this once to create the real admin account. Requires the setup code configured by the site owner in Vercel Environment Variables.
-                </p>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-300 block">Admin Email</label>
-                  <input
-                    type="email"
-                    required
-                    value={setupEmail}
-                    onChange={(e) => setSetupEmail(e.target.value)}
-                    className="w-full px-3 py-2 text-xs text-white bg-slate-900 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-300 block">New Password</label>
-                  <input
-                    type="password"
-                    required
-                    minLength={8}
-                    placeholder="At least 8 characters"
-                    value={setupPassword}
-                    onChange={(e) => setSetupPassword(e.target.value)}
-                    className="w-full px-3 py-2 text-xs text-white bg-slate-900 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-300 block">Setup Code</label>
-                  <input
-                    type="password"
-                    required
-                    placeholder="ADMIN_SETUP_SECRET"
-                    value={setupSecret}
-                    onChange={(e) => setSetupSecret(e.target.value)}
-                    className="w-full px-3 py-2 text-xs text-white bg-slate-900 rounded-lg border border-slate-700 focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                  />
-                </div>
-
-                {setupMessage && (
-                  <div className={`p-2.5 rounded-lg border text-xs flex items-center gap-2 ${setupSuccess ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-rose-500/10 border-rose-500/30 text-rose-300'}`}>
-                    <AlertCircle className="w-4 h-4 shrink-0" />
-                    <span>{setupMessage}</span>
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={isSetupLoading}
-                  className="w-full py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 font-bold text-xs text-white transition-all cursor-pointer disabled:opacity-50"
-                >
-                  {isSetupLoading ? 'Creating account...' : 'Create Admin Account'}
-                </button>
-              </form>
-            )}
+            <p className="text-[10px] text-slate-600 text-center">
+              Access is limited to pre-authorized administrator accounts only.
+            </p>
           </div>
 
           <div className="pt-2 text-[11px] text-slate-500 flex items-center justify-center gap-1.5 border-t border-slate-800/80">
