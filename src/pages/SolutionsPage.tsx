@@ -68,7 +68,7 @@ export const SolutionsPage: React.FC = () => {
       benefits: [
         'Modern high-contrast typography and clear layout hierarchy',
         'Sub-second page speeds with Core Web Vitals optimization',
-        'Integrated lead capture and Firebase Cloud persistence',
+        'Integrated lead capture and secure PostgreSQL persistence',
         'Mobile-first responsive design for all devices',
       ],
       serviceLink: '/contact?service=web_development',
