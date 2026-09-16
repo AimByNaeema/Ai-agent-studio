@@ -7,7 +7,7 @@ interface PageMetadataOptions {
   noIndex?: boolean;
 }
 
-const SITE_URL = 'https://ai-agent-studio-beige.vercel.app';
+const SITE_URL = 'https://frontend-production-650e.up.railway.app';
 
 function setMetaByName(name: string, content: string) {
   let el = document.querySelector(`meta[name="${name}"]`);
