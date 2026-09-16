@@ -18,7 +18,7 @@ import {
   Briefcase
 } from 'lucide-react';
 import { PricingPlan, ServiceInterest } from '../types';
-import { submitProjectLead } from '../lib/firebase';
+import { submitProjectLead } from '../lib/api';
 
 // ============================================================================
 // 1. GET STARTED / STORE ONBOARDING MODAL

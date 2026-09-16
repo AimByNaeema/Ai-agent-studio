@@ -14,7 +14,7 @@ import {
   Layers,
   ChevronRight
 } from 'lucide-react';
-import { INITIAL_SERVICES } from '../lib/firebase';
+import { INITIAL_SERVICES } from '../lib/api';
 
 export const PlatformSection: React.FC = () => {
   const services = INITIAL_SERVICES;

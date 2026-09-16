@@ -14,7 +14,7 @@ import {
   Sparkles,
   ChevronRight
 } from 'lucide-react';
-import { INITIAL_AGENT_CATEGORIES } from '../lib/firebase';
+import { INITIAL_AGENT_CATEGORIES } from '../lib/api';
 
 export const GlobalMarketSection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>('restaurants-cafes');

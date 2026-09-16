@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Lock, Mail, CheckCircle2, AlertCircle } from 'lucide-react';
-import { subscribeNewsletter } from '../lib/firebase';
+import { subscribeNewsletter } from '../lib/api';
 
 export const Footer: React.FC = () => {
   const [newsletterEmail, setNewsletterEmail] = useState('');

@@ -38,7 +38,8 @@ import {
   NewsletterSubscriberRecord,
 } from '../types';
 import {
-  isFirebaseConfigured,
+  isBackendConfigured,
+  API_BASE_URL,
   fetchAdminLeads,
   updateLeadStatus,
   updateLeadInternalNotes,
@@ -48,43 +49,39 @@ import {
   fetchAdminCategories,
   fetchAdminSubscribers,
   seedFirestoreInitialData,
-  auth,
-} from '../lib/firebase';
-import {
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut,
-  onAuthStateChanged,
-  User as FirebaseUser, } from 'firebase/auth';
+} from '../lib/api';
+import { getSession, setSession, onSessionChange, AdminSession } from '../lib/session';
+import { signInWithGoogle } from '../lib/googleAuth';
 
 // Only these Google accounts may reach the admin dashboard. This mirrors the
-// server-side allowlist in api/_lib/verifyAdminAuth.js and firestore.rules'
-// isAdmin() - this client-side check is a UX convenience only, never the
-// actual security boundary. Every protected API call and every Firestore
-// read/write is independently re-checked server-side against the same list.
+// server-side allowlist in server/middleware/requireAdmin.js (the `admins`
+// Postgres table) - this client-side check is a UX convenience only, never
+// the actual security boundary. Every protected API call is independently
+// re-checked server-side against that same table.
 const ADMIN_EMAILS = ['aimbynaeema@gmail.com', 'aiagentstudioo@gmail.com'];
 
 export const AdminPage: React.FC = () => {
   usePageMetadata({
     title: 'Admin Management & Lead CRM | AI AGENT STUDIO',
     description: 'Internal administration portal for managing project inquiries, portfolio records, and platform telemetry.',
+    noIndex: true,
   });
 
-  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+  const [currentSession, setCurrentSession] = useState<AdminSession | null>(getSession());
   const [authError, setAuthError] = useState<string | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
-  // Monitor Firebase Auth state
+  // Monitor the admin session (set after Google Sign-In verifies against the
+  // backend's admin allowlist; cleared automatically on a 401 from any
+  // admin-only request — see src/lib/api.ts's adminFetch).
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-    });
-    return () => unsubscribe();
+    const unsubscribe = onSessionChange(setCurrentSession);
+    return unsubscribe;
   }, []);
 
   // Authenticated AND on the admin allowlist. See ADMIN_EMAILS note above -
   // real enforcement is server-side; this only controls what the client renders.
-  const isAuthenticated = Boolean(currentUser) && ADMIN_EMAILS.includes(currentUser?.email ?? '');
+  const isAuthenticated = Boolean(currentSession) && ADMIN_EMAILS.includes(currentSession?.email ?? '');
 
   // Tabs: 'leads' | 'projects' | 'services' | 'categories' | 'subscribers' | 'database'
   const [activeTab, setActiveTab] = useState<'leads' | 'projects' | 'services' | 'categories' | 'subscribers' | 'agent' | 'database'>('leads');
@@ -142,30 +139,32 @@ export const AdminPage: React.FC = () => {
     setIsAuthLoading(true);
     setAuthError(null);
     try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const signedInEmail = result.user.email ?? '';
-      if (!ADMIN_EMAILS.includes(signedInEmail)) {
-        // Not an authorized admin account - sign back out immediately so no
-        // session is left behind, and never grant dashboard access.
-        await signOut(auth);
-        setAuthError('This Google account is not authorized for admin access.');
+      // Google Identity Services replaces Firebase's signInWithPopup here -
+      // same "Sign in with Google" UX, no Firebase involved. The resulting
+      // ID token is verified server-side and exchanged for a session token.
+      const credential = await signInWithGoogle();
+      const res = await fetch(`${API_BASE_URL}/api/auth/google`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ credential }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        // Covers both "not verified" and "not on the admin allowlist" -
+        // never grants dashboard access either way.
+        setAuthError(data?.error || 'This Google account is not authorized for admin access.');
+        return;
       }
+      setSession({ token: data.token, email: data.email, name: data.name, picture: data.picture });
     } catch (err: any) {
-      if (err?.code !== 'auth/popup-closed-by-user') {
-        setAuthError('Google sign-in failed. Please try again.');
-      }
+      setAuthError(err?.message || 'Google sign-in failed. Please try again.');
     } finally {
       setIsAuthLoading(false);
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-    } catch {
-      // ignore
-    }
+  const handleLogout = () => {
+    setSession(null);
   };
 
   const handleStatusChange = async (leadId: string, newStatus: LeadStatus) => {
@@ -302,7 +301,7 @@ export const AdminPage: React.FC = () => {
 
           <div className="pt-2 text-[11px] text-slate-500 flex items-center justify-center gap-1.5 border-t border-slate-800/80">
             <Lock className="w-3 h-3 text-emerald-400" />
-            <span>Protected by Cloud Firestore & Firebase Auth Security Rules</span>
+            <span>Protected by PostgreSQL & Google Sign-In</span>
           </div>
         </div>
       </div>
@@ -323,8 +322,8 @@ export const AdminPage: React.FC = () => {
                 AI AGENT STUDIO <span className="text-orange-500">Control Center</span>
               </h1>
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-slate-900 border border-slate-700 text-slate-300">
-                <span className={`w-2 h-2 rounded-full ${isFirebaseConfigured ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
-                <span>{isFirebaseConfigured ? 'Cloud Firestore Live' : 'Local Persistence Mode'}</span>
+                <span className={`w-2 h-2 rounded-full ${isBackendConfigured ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+                <span>{isBackendConfigured ? 'Backend Connected' : 'Local Fallback Mode'}</span>
               </div>
             </div>
           </div>
@@ -841,23 +840,23 @@ export const AdminPage: React.FC = () => {
               <div className="flex items-center gap-3">
                 <Database className="w-6 h-6 text-orange-500" />
                 <div>
-                  <h3 className="text-base font-bold text-white">Google Cloud Firestore & Firebase Architecture</h3>
-                  <p className="text-xs text-slate-400">Production NoSQL database schema with fine-grained Security Rules and Firebase Auth.</p>
+                  <h3 className="text-base font-bold text-white">PostgreSQL & Express Architecture</h3>
+                  <p className="text-xs text-slate-400">Production relational database schema on Railway, with authorization enforced in the Express API layer and Google Sign-In.</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-xs">
                 <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                  <span className="font-bold text-white block">1. Firestore Collections</span>
+                  <span className="font-bold text-white block">1. PostgreSQL Tables</span>
                   <span className="text-slate-400 block text-[11px]">
                     <code className="text-orange-400">project_leads</code>, <code className="text-orange-400">projects</code>, <code className="text-orange-400">services</code>, <code className="text-orange-400">agent_categories</code>, <code className="text-orange-400">newsletter_subscribers</code>, <code className="text-orange-400">admins</code>.
                   </span>
                 </div>
 
                 <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                  <span className="font-bold text-white block">2. Security Rules (firestore.rules)</span>
+                  <span className="font-bold text-white block">2. Authorization (server/middleware)</span>
                   <span className="text-slate-400 block text-[11px]">
-                    Strict validation on public lead submissions. Admin-only read, update, and delete access.
+                    Strict validation on public lead submissions. Admin-only read, update, and delete access via session-JWT + allowlist.
                   </span>
                 </div>
 
@@ -871,20 +870,20 @@ export const AdminPage: React.FC = () => {
 
               <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
                 <div className="flex items-center justify-between text-xs font-mono text-slate-300 font-bold">
-                  <span>Firebase Config & Blueprint</span>
-                  <span className="text-[11px] text-orange-400">firebase-applet-config.json</span>
+                  <span>Backend Config</span>
+                  <span className="text-[11px] text-orange-400">server/.env</span>
                 </div>
                 <pre className="text-[11px] font-mono text-slate-400 p-3 rounded-lg bg-slate-900 overflow-x-auto border border-slate-800">
-{`// Firebase Configuration & Security Rules active:
-- Project ID: mimetic-decorator-26shk
-- Firestore DB: ai-studio-ecommercegrowtha-baa4d071-ea03-48b0-8a5b-d03756fa7107
-- Blueprint: /firebase-blueprint.json
-- Security Rules: /firestore.rules (Active & Deployed)`}
+{`// Backend configuration active:
+- API base URL: ${API_BASE_URL || '(same-origin — VITE_API_BASE_URL not set)'}
+- Database: PostgreSQL (Railway)
+- Auth: Google Identity Services + session JWT
+- Schema: server/db/schema.sql (Active & Deployed)`}
                 </pre>
 
                 <div className="pt-2 flex items-center justify-between border-t border-slate-800">
                   <span className="text-xs text-slate-400">
-                    Ensure standard projects & service catalog are seeded to Cloud Firestore:
+                    Ensure standard projects & service catalog are seeded to PostgreSQL:
                   </span>
                   <button
                     onClick={async () => {
@@ -893,7 +892,7 @@ export const AdminPage: React.FC = () => {
                     }}
                     className="px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs cursor-pointer transition-colors shadow-md shadow-orange-500/20"
                   >
-                    Sync / Seed to Cloud Firestore
+                    Sync / Seed to PostgreSQL
                   </button>
                 </div>
               </div>

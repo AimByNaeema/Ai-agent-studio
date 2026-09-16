@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { usePageMetadata } from '../hooks/usePageMetadata';
-import { submitProjectLead, isFirebaseConfigured } from '../lib/firebase';
+import { submitProjectLead } from '../lib/api';
 import { ServiceInterest } from '../types';
 
 export const ContactPage: React.FC = () => {

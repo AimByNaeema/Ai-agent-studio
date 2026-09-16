@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { fetchPublishedServices } from '../lib/firebase';
+import type React from 'react';
+import { fetchPublishedServices, API_BASE_URL } from '../lib/api';
 import { logChatMessages } from '../lib/agent';
 import { ServiceRecord } from '../types';
 
@@ -40,7 +41,9 @@ export default function ChatWidget() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [provider, setProvider] = useState<Provider>('claude');
+  // Defaults to Gemini: this deployment is configured with GEMINI_API_KEY
+  // (visitors can still switch to Claude if ANTHROPIC_API_KEY is later added).
+  const [provider, setProvider] = useState<Provider>('gemini');
   const [services, setServices] = useState<ServiceRecord[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const sessionIdRef = useRef<string>(makeSessionId());
@@ -71,7 +74,7 @@ export default function ChatWidget() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ messages: nextMessages, provider, services }),

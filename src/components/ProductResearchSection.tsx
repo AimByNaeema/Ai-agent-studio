@@ -15,7 +15,7 @@ import {
   ChevronRight,
   Database
 } from 'lucide-react';
-import { INITIAL_PROJECTS } from '../lib/firebase';
+import { INITIAL_PROJECTS } from '../lib/api';
 import { ProjectRecord } from '../types';
 
 export const ProductResearchSection: React.FC = () => {

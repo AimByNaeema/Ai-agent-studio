@@ -18,6 +18,7 @@ export const LoginPage: React.FC = () => {
   usePageMetadata({
     title: 'Merchant Login | Growth Console',
     description: 'Sign in to access your autonomous AI Growth Console, review staged recommendations, and inspect real-time storefront telemetry.',
+    noIndex: true,
   });
 
   const navigate = useNavigate();

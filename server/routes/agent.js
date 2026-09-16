@@ -347,6 +347,57 @@ You will be given the lead's actual submitted fields and the company's actual pu
 
 // POST /api/agent/lead-draft — admin. Ported unchanged from the old
 // api/agent/lead-draft.js Vercel function. Does not save or send anything.
+async function draftWithClaude(apiKey, userContent) {
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-5',
+      max_tokens: 500,
+      system: LEAD_DRAFT_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: userContent }],
+    }),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    console.error('Claude API error (lead-draft):', errText);
+    return { error: 'Claude API error while drafting. Please try again.' };
+  }
+
+  const data = await response.json();
+  return { draft: data?.content?.[0]?.text || '', model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-5' };
+}
+
+async function draftWithGemini(apiKey, userContent) {
+  const model = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: LEAD_DRAFT_SYSTEM_PROMPT }] },
+      contents: [{ role: 'user', parts: [{ text: userContent }] }],
+      generationConfig: { maxOutputTokens: 500 },
+    }),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    console.error('Gemini API error (lead-draft):', errText);
+    return { error: 'Gemini API error while drafting. Please try again.' };
+  }
+
+  const data = await response.json();
+  const draft = data?.candidates?.[0]?.content?.parts?.map((p) => p.text).join('') || '';
+  return { draft, model };
+}
+
 router.post('/lead-draft', requireAdmin, async (req, res) => {
   const { lead, services } = req.body || {};
   if (!lead || typeof lead !== 'object' || !lead.full_name || !lead.message) {
@@ -356,9 +407,12 @@ router.post('/lead-draft', requireAdmin, async (req, res) => {
     return res.status(400).json({ error: 'A services array is required (pass the real published services).' });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return res.status(500).json({ error: 'ANTHROPIC_API_KEY is not set on the server yet.' });
+  // Prefer Claude when configured (original behavior); fall back to Gemini
+  // so this works with only a GEMINI_API_KEY configured on the server.
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY;
+  if (!anthropicKey && !geminiKey) {
+    return res.status(500).json({ error: 'Neither ANTHROPIC_API_KEY nor GEMINI_API_KEY is set on the server yet.' });
   }
 
   const leadFacts = `Lead facts (real, from the contact form submission — use only these):
@@ -376,40 +430,24 @@ router.post('/lead-draft', requireAdmin, async (req, res) => {
         .join('\n')}`
     : 'No published services were provided — do not name any specific service by title.';
 
+  const userContent = `${leadFacts}\n\n${servicesFacts}\n\nDraft the reply now.`;
+
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-5',
-        max_tokens: 500,
-        system: LEAD_DRAFT_SYSTEM_PROMPT,
-        messages: [
-          { role: 'user', content: `${leadFacts}\n\n${servicesFacts}\n\nDraft the reply now.` },
-        ],
-      }),
-    });
+    const result = anthropicKey
+      ? await draftWithClaude(anthropicKey, userContent)
+      : await draftWithGemini(geminiKey, userContent);
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error('Claude API error (lead-draft):', errText);
-      return res.status(502).json({ error: 'Claude API error while drafting. Please try again.' });
+    if (result.error) {
+      return res.status(502).json({ error: result.error });
     }
-
-    const data = await response.json();
-    const draft = data?.content?.[0]?.text || '';
-    if (!draft) {
+    if (!result.draft) {
       return res.status(502).json({ error: 'The model returned an empty draft. Please try again.' });
     }
 
     return res.status(200).json({
-      draft_message: draft,
+      draft_message: result.draft,
       evidence: `Drafted from the lead's own submitted fields (name, service_interest, company_name, project_budget, project_timeline, message) and ${services.length} real published service record(s). No facts outside this input were used.`,
-      model_used: process.env.CLAUDE_MODEL || 'claude-sonnet-4-5',
+      model_used: result.model,
       generated_at: new Date().toISOString(),
     });
   } catch (err) {

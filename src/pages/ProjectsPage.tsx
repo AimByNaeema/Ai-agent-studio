@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { usePageMetadata } from '../hooks/usePageMetadata';
-import { INITIAL_PROJECTS } from '../lib/firebase';
+import { INITIAL_PROJECTS } from '../lib/api';
 import { ProjectRecord } from '../types';
 
 export const ProjectsPage: React.FC = () => {

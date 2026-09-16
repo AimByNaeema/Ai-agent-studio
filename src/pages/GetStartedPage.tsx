@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { usePageMetadata } from '../hooks/usePageMetadata';
-import { submitProjectLead } from '../lib/firebase';
+import { submitProjectLead } from '../lib/api';
 
 export const GetStartedPage: React.FC = () => {
   usePageMetadata({
