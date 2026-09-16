@@ -11,7 +11,7 @@ import { usePageMetadata } from '../hooks/usePageMetadata';
 
 export const HomePage: React.FC = () => {
   usePageMetadata({
-    title: 'AI AGENT STUDIO | AI Digital Employees & Websites Built for Modern Businesses',
+    title: 'AI AGENT STUDIO — AI Digital Employees & Websites',
     description: 'We build custom AI agents, professional websites, ecommerce systems, automation workflows, and digital tools designed around the needs of each business.',
   });
 
