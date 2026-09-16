@@ -84,15 +84,49 @@ async function main() {
     await waitForServer(`http://localhost:${PORT}/`);
 
     const browser = await chromium.launch();
-    const page = await browser.newPage();
 
     for (const route of ROUTES) {
       const url = `http://localhost:${PORT}${route}`;
       console.log('[prerender] Rendering', route);
-      await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
-      // Give React a beat to finish mounting/painting after network idle.
-      await page.waitForTimeout(300);
-      const html = await page.content();
+
+      // A fresh browser context per route avoids any cross-navigation state
+      // bleeding between routes (seen once as a stale-content bug when a
+      // single page/tab was reused for every route in sequence).
+      let html = '';
+      let lastError = null;
+      for (let attempt = 1; attempt <= 3 && !html; attempt++) {
+        const context = await browser.newContext();
+        const page = await context.newPage();
+        let moduleLoadFailed = false;
+        page.on('console', (msg) => {
+          // Narrow, specific signal that the app's own JS bundle failed to
+          // load/execute (as opposed to an unrelated resource like a
+          // Google Fonts request, which can fail in sandboxed/offline
+          // environments without affecting the actual page render).
+          if (msg.type() === 'error' && /Failed to load module script/i.test(msg.text())) {
+            moduleLoadFailed = true;
+          }
+        });
+        try {
+          await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+          // Give React a beat to finish mounting/painting after network idle.
+          await page.waitForTimeout(400);
+          const rootHtml = await page.evaluate(() => document.getElementById('root')?.innerHTML || '');
+          if (moduleLoadFailed || rootHtml.trim().length < 2000) {
+            throw new Error(`Render looked incomplete on attempt ${attempt} (moduleLoadFailed=${moduleLoadFailed}, rootHtml length=${rootHtml.trim().length})`);
+          }
+          html = await page.content();
+        } catch (err) {
+          lastError = err;
+          console.warn(`[prerender] Attempt ${attempt} for ${route} failed: ${err.message}`);
+        } finally {
+          await context.close();
+        }
+      }
+
+      if (!html) {
+        throw new Error(`[prerender] Giving up on ${route} after 3 attempts: ${lastError?.message}`);
+      }
 
       const dir = route === '/' ? outDir : join(outDir, route.replace(/^\//, ''));
       mkdirSync(dir, { recursive: true });
