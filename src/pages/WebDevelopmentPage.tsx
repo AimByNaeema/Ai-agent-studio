@@ -59,7 +59,7 @@ export const WebDevelopmentPage: React.FC = () => {
         'Bespoke digital platforms, client portals, membership systems, and internal operational tools built around your proprietary business workflows.',
       features: [
         'User authentication, role-based permissions, and profile dashboards',
-        'Cloud database integration (Cloud Firestore / relational SQL)',
+        'Cloud database integration (PostgreSQL)',
         'Real-time data synchronization and interactive dashboards',
         'Clean API endpoints and secure third-party integrations',
       ],
@@ -261,8 +261,8 @@ export const WebDevelopmentPage: React.FC = () => {
 
               <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
                 <span className="text-[10px] font-mono text-orange-400 font-bold uppercase block">DATABASE</span>
-                <span className="text-sm font-bold text-white block">Google Cloud Firestore</span>
-                <span className="text-[11px] text-slate-400">Real-time NoSQL, strict security rules, automated backups.</span>
+                <span className="text-sm font-bold text-white block">PostgreSQL (Railway)</span>
+                <span className="text-[11px] text-slate-400">Structured relational database, strict access control, automated backups.</span>
               </div>
 
               <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">

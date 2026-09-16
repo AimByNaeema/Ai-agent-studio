@@ -61,7 +61,7 @@ export const AiAgentsPage: React.FC = () => {
       status: 'In Development',
       badge: 'Active System',
       overview:
-        'Intelligent digital employees that analyze customer search behavior, optimize product descriptions, assist buyers with sizing/fit guidance, and surface revenue opportunities.',
+        'Intelligent digital employees that analyze customer search behavior, optimize product descriptions, assist buyers with sizing/fit guidance, and surface revenue opportunities across storefronts like Shopify, Etsy, Amazon, and eBay.',
       capabilities: [
         'Real-time product recommendation based on buyer intent',
         'SEO keyword recovery & dynamic listing copy enhancements',
@@ -136,7 +136,7 @@ export const AiAgentsPage: React.FC = () => {
         'Audit logs for every reasoning step and data transformation',
         'Human approval required for any external or write action',
       ],
-      deliverable: 'Custom full-stack deployment with dedicated Firestore database and monitoring.',
+      deliverable: 'Custom full-stack deployment with dedicated PostgreSQL database and monitoring.',
     },
   ];
 
@@ -364,7 +364,7 @@ export const AiAgentsPage: React.FC = () => {
                 <span className="text-[10px] font-mono text-orange-400 font-bold">02. REASONING</span>
                 <h4 className="text-sm font-bold text-white">Grounded Context</h4>
                 <p className="text-xs text-slate-400 leading-snug">
-                  Agent queries your verified Firestore database and internal documents for exact facts.
+                  Agent queries your verified PostgreSQL database and internal documents for exact facts.
                 </p>
               </div>
 

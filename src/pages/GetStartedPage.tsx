@@ -52,7 +52,7 @@ export const GetStartedPage: React.FC = () => {
     { id: 'web_development', title: 'Modern Business Website', icon: Layout, desc: 'High-performance responsive site with sub-second speeds' },
     { id: 'ecommerce_solution', title: 'Ecommerce & Growth Platform', icon: Globe, desc: 'Storefront optimization, product discovery, & listing SEO' },
     { id: 'ai_automation', title: 'AI Business Automation', icon: Zap, desc: 'Multi-step workflow pipelines connecting tools & databases' },
-    { id: 'custom_digital_solution', title: 'Custom Digital System', icon: Sparkles, desc: 'Full-stack bespoke web app with AI logic and Firestore' },
+    { id: 'custom_digital_solution', title: 'Custom Digital System', icon: Sparkles, desc: 'Full-stack bespoke web app with AI logic and a secure database' },
   ];
 
   const handleToggleObjective = (obj: string) => {
@@ -151,7 +151,7 @@ export const GetStartedPage: React.FC = () => {
             </div>
             <h2 className="text-2xl font-bold text-white">Discovery Intake Received!</h2>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Thank you, <span className="text-white font-bold">{contactName}</span>. Your project inquiry has been securely recorded in our Google Cloud Firestore system. We will review your goals for <span className="text-orange-400 font-semibold">{companyName || 'your business'}</span> and follow up within 24 hours at <span className="text-white font-mono">{email}</span>.
+              Thank you, <span className="text-white font-bold">{contactName}</span>. Your project inquiry has been securely recorded in our database. We will review your goals for <span className="text-orange-400 font-semibold">{companyName || 'your business'}</span> and follow up within 24 hours at <span className="text-white font-mono">{email}</span>.
             </p>
             <div className="pt-2 flex flex-col sm:flex-row justify-center gap-3">
               <Link
@@ -405,7 +405,7 @@ export const GetStartedPage: React.FC = () => {
 
                   <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300 flex items-start gap-2">
                     <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <span>Saved securely to Firestore CRM. No sales spam or unapproved outreach.</span>
+                    <span>Saved securely to our CRM. No sales spam or unapproved outreach.</span>
                   </div>
 
                   <div className="pt-2 flex justify-between items-center">

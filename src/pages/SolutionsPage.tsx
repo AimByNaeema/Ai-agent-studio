@@ -96,7 +96,7 @@ export const SolutionsPage: React.FC = () => {
       icon: ShoppingBag,
       badge: 'Retail & Commerce',
       summary:
-        'Empower your online store with AI-assisted product discovery, catalog SEO enhancements, sizing and specification guidance, and automated customer notifications.',
+        'Empower your online store — on Shopify, Etsy, Amazon, eBay, or your own website — with AI-assisted product discovery, catalog SEO enhancements, sizing and specification guidance, and automated customer notifications.',
       benefits: [
         'AI shopping assistance that guides customers to the right product',
         'Automated product description drafting and keyword clustering',
@@ -116,7 +116,7 @@ export const SolutionsPage: React.FC = () => {
       benefits: [
         'Engineered specifically around your internal business logic',
         'Secure multi-role authentication and administrative control',
-        'Cloud Firestore database with fine-grained security rules',
+        'PostgreSQL database with fine-grained access control',
         'Scalable codebase you own without perpetual vendor lock-in',
       ],
       serviceLink: '/contact?service=custom_digital_solution',
@@ -229,10 +229,10 @@ export const SolutionsPage: React.FC = () => {
             <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
               <div className="flex items-center gap-2 text-white font-bold">
                 <Database className="w-4 h-4 text-emerald-400" />
-                <span>Cloud Firestore Database</span>
+                <span>PostgreSQL Database</span>
               </div>
               <p className="text-slate-400 text-[11px] leading-relaxed">
-                Structured NoSQL persistence with granular security rules and automated redundancy.
+                Structured relational persistence with granular access control and automated backups.
               </p>
             </div>
           </div>

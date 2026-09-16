@@ -44,7 +44,7 @@ export const HowItWorksPage: React.FC = () => {
       headline: 'Define system specifications and agent reasoning boundaries.',
       description:
         'We design the technical architecture: website sitemaps, data schemas, AI knowledge boundaries, API integration points, and human approval checkpoints. Everything is clearly mapped out before a single line of production code is written.',
-      deliverables: ['System Architecture Diagram', 'Firestore Data Schema', 'Agent Decision Tree & Guardrails'],
+      deliverables: ['System Architecture Diagram', 'Database Schema', 'Agent Decision Tree & Guardrails'],
     },
     {
       number: '03',
@@ -61,8 +61,8 @@ export const HowItWorksPage: React.FC = () => {
       icon: Hammer,
       headline: 'Develop scalable full-stack code and server-side integrations.',
       description:
-        'We write clean, modular React and TypeScript code supported by secure server-side proxy routes and Google Cloud Firestore persistence. AI agents are grounded strictly in your verified documentation and connected to webhooks.',
-      deliverables: ['Clean Full-Stack Codebase', 'Backend API Proxies', 'Security Rules Validation (firestore.rules)'],
+        'We write clean, modular React and TypeScript code supported by secure server-side API routes and PostgreSQL persistence. AI agents are grounded strictly in your verified documentation and connected to webhooks.',
+      deliverables: ['Clean Full-Stack Codebase', 'Backend API Proxies', 'Access Control Validation (API-layer authorization)'],
     },
     {
       number: '05',
@@ -98,7 +98,7 @@ export const HowItWorksPage: React.FC = () => {
     {
       icon: ShieldCheck,
       title: 'Strict Security Rules',
-      description: 'Google Cloud Firestore security rules enforce that public users can only submit validated inquiries, while all customer data is admin-restricted.',
+      description: 'Strict server-side authorization rules enforce that public users can only submit validated inquiries, while all customer data is admin-restricted.',
     },
     {
       icon: Sliders,

@@ -36,7 +36,7 @@ export const PricingPage: React.FC = () => {
         'Custom bespoke responsive design (mobile, tablet, desktop)',
         'Sub-second page speeds with Core Web Vitals optimization',
         'SEO-first semantic structure & Open Graph metadata',
-        'Inquiry form connected to Cloud Firestore & email alerts',
+        'Inquiry form connected to our database & email alerts',
         'Dedicated admin lead manager portal',
         'Domain connection, SSL setup, and production deployment',
         '14 days post-launch technical warranty & support',
@@ -79,7 +79,7 @@ export const PricingPage: React.FC = () => {
       features: [
         'Full bespoke website engineering (all core pages)',
         'Fully integrated 24/7 AI digital employee on storefront',
-        'Cloud Firestore database with fine-grained security rules',
+        'PostgreSQL database with fine-grained access control',
         'Admin CRM portal for lead and conversation management',
         'Automated notifications via email, Slack, or webhook',
         'End-to-end testing, staging sandbox & client sign-off',

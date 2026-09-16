@@ -202,7 +202,7 @@ export const ProjectsPage: React.FC = () => {
                       </div>
                       <div className="flex items-center gap-2">
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span>Built with Cloud Firestore & secure authentication</span>
+                        <span>Built with PostgreSQL & secure authentication</span>
                       </div>
                     </div>
                   )}
