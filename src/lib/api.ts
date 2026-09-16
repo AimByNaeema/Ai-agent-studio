@@ -165,7 +165,7 @@ export const INITIAL_SERVICES: ServiceRecord[] = [
     deliverables: [
       'Vite & React Full-Stack Application',
       'Tailwind CSS Design System',
-      'Cloud Run or Firebase Hosting Deployment',
+      'Production Deployment on Railway',
     ],
     is_available_for_custom_projects: true,
     sort_order: 2,
@@ -178,9 +178,9 @@ export const INITIAL_SERVICES: ServiceRecord[] = [
     slug: 'ecommerce-solutions',
     title: 'Ecommerce Solutions',
     short_description:
-      'Custom ecommerce websites, product experiences, research systems, SEO tools, and growth-focused digital solutions.',
+      'Custom ecommerce websites, product experiences, research systems, SEO tools, and growth-focused digital solutions — for your own website and marketplaces like Shopify, Etsy, Amazon, and eBay.',
     full_description:
-      'End-to-end commerce engineering spanning storefront optimization, automated listing enhancements, margin whitespace discovery, ad creative playbooks, and conversion rate optimization.',
+      'End-to-end commerce engineering spanning storefront optimization, automated listing enhancements, margin whitespace discovery, ad creative playbooks, and conversion rate optimization — across your independent website and marketplace storefronts (Shopify, Etsy, Amazon, eBay).',
     icon_key: 'ShoppingBag',
     key_features: [
       'Conversion-optimized product pages',
