@@ -9,12 +9,12 @@ import { ServiceRecord } from '../types';
 // once near the bottom of your root layout (e.g. in App.tsx, alongside
 // <Navbar /> and <Footer />) so it appears on every page.
 //
-// It talks to /api/chat (a Vercel serverless function) — your Anthropic API
-// key never reaches the browser.
+// It talks to /api/chat (the Node.js/Express backend on Railway) — your
+// Anthropic/Gemini API key never reaches the browser.
 //
-// It is grounded in the site's REAL published services (fetched from
-// Firestore on mount) rather than a hardcoded list, and it logs each
-// conversation to Firestore (agent_chat_sessions) so the owner has a real,
+// It is grounded in the site's REAL published services (fetched from the
+// backend on mount) rather than a hardcoded list, and it logs each
+// conversation to PostgreSQL (agent_chat_sessions) so the owner has a real,
 // reviewable transcript in the Admin Control Center. Nothing about a
 // visitor's chat is ever sent anywhere except this site's own database.
 

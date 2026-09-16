@@ -73,9 +73,9 @@ export const SecurityControlSection: React.FC = () => {
                 <Database className="w-4 h-4 text-orange-400" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white">Strict Firestore Security Rules</h3>
+                <h3 className="text-sm font-bold text-white">Strict Database Access Rules</h3>
                 <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                  Google Cloud Firestore database rules enforce validated lead submissions and block public read access to private customer data.
+                  Server-side authorization rules enforce validated lead submissions and block public access to private customer data.
                 </p>
               </div>
             </div>
@@ -250,7 +250,7 @@ export const CostEfficiencySection: React.FC = () => {
             </div>
 
             <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-              <span className="text-xs font-bold text-white block">Cloud Firestore Security</span>
+              <span className="text-xs font-bold text-white block">Database Security</span>
               <p className="text-[11px] text-slate-400 mt-1">
                 Hardened security rules preventing unauthorized reading or tampering with your customer records.
               </p>

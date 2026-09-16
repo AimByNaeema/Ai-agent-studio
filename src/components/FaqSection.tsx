@@ -15,7 +15,7 @@ export const FaqSection: React.FC = () => {
       id: 'faq-2',
       question: 'Can you build or modernize our existing website?',
       answer:
-        'Yes. We build bespoke, high-performance websites and web applications using modern full-stack architectures (React, Vite, TypeScript, Tailwind CSS, and Google Cloud Firestore). We optimize for sub-second load times, mobile responsiveness, semantic search engine optimization (SEO), and clean conversion flows.',
+        'Yes. We build bespoke, high-performance websites and web applications using modern full-stack architectures (React, Vite, TypeScript, Tailwind CSS, Node.js/Express, and PostgreSQL). We optimize for sub-second load times, mobile responsiveness, semantic search engine optimization (SEO), and clean conversion flows.',
     },
     {
       id: 'faq-3',

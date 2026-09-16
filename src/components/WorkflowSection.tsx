@@ -45,7 +45,7 @@ export const WorkflowSection: React.FC = () => {
       icon: Hammer,
       subtitle: 'Full-Stack Development',
       description:
-        'We write clean React/TypeScript code, secure API proxy endpoints, and fine-grained Firestore security rules.',
+        'We write clean React/TypeScript code, secure API proxy endpoints, and fine-grained API-layer access control.',
     },
     {
       number: '05',

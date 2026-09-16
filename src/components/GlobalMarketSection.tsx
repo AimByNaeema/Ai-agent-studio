@@ -101,7 +101,7 @@ export const GlobalMarketSection: React.FC = () => {
         'Conversational requirement gathering on your website',
         'Budget and timeline qualification before team calls',
         'Instant calendar booking for high-fit prospects',
-        'Direct submission into your Google Cloud Firestore CRM',
+        'Direct submission into your CRM database',
       ],
       link: '/ai-agents',
     },

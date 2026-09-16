@@ -152,7 +152,7 @@ export const PlatformSection: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-300">
                   <Database className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Google Cloud Firestore data persistence</span>
+                  <span>PostgreSQL data persistence</span>
                 </div>
               </div>
             </div>
