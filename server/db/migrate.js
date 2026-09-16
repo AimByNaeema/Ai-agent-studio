@@ -29,6 +29,20 @@ async function main() {
     console.log('[migrate] Applying server/db/schema.sql...');
     await pool.query(sql);
     console.log('[migrate] Schema applied successfully.');
+
+    // Seed an initial admin password from a Railway variable (never
+    // committed to Git) — only fills in rows that don't have one yet, so
+    // this never overwrites a password an admin has since changed.
+    const seedHash = process.env.ADMIN_SEED_PASSWORD_HASH;
+    if (seedHash) {
+      const result = await pool.query(
+        `UPDATE admins SET password_hash = $1 WHERE password_hash IS NULL RETURNING email`,
+        [seedHash]
+      );
+      if (result.rowCount > 0) {
+        console.log(`[migrate] Seeded initial password for ${result.rowCount} admin account(s).`);
+      }
+    }
   } catch (err) {
     console.error('[migrate] Failed to apply schema:', err);
     process.exit(1);

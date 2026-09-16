@@ -1,9 +1,45 @@
 import { Router } from 'express';
+import bcrypt from 'bcryptjs';
 import { pool } from '../db.js';
 import { verifyGoogleIdToken } from '../lib/googleAuth.js';
 import { signSessionToken, verifySessionToken } from '../lib/jwt.js';
+import { authLimiter } from '../middleware/rateLimit.js';
 
 const router = Router();
+
+// POST /api/auth/login — email + password admin sign-in. Primary login
+// method (Google Sign-In below is kept working but unused by the frontend
+// for now, since it requires a paid-looking Google Cloud OAuth setup the
+// site owner opted to skip).
+router.post('/login', authLimiter, async (req, res) => {
+  const { email, password } = req.body || {};
+  if (!email || typeof email !== 'string' || !password || typeof password !== 'string') {
+    return res.status(400).json({ error: 'Email and password are required.' });
+  }
+
+  try {
+    const result = await pool.query('SELECT email, password_hash FROM admins WHERE email = $1', [
+      email.trim().toLowerCase(),
+    ]);
+    if (result.rowCount === 0 || !result.rows[0].password_hash) {
+      // Same generic message whether the email is unknown or has no
+      // password set yet — never confirm which admin emails exist.
+      return res.status(401).json({ error: 'Incorrect email or password.' });
+    }
+
+    const admin = result.rows[0];
+    const ok = await bcrypt.compare(password, admin.password_hash);
+    if (!ok) {
+      return res.status(401).json({ error: 'Incorrect email or password.' });
+    }
+
+    const token = signSessionToken(admin.email);
+    return res.status(200).json({ token, email: admin.email, name: null, picture: null });
+  } catch (err) {
+    console.error('[auth] login error:', err);
+    return res.status(500).json({ error: 'Could not sign you in. Please try again.' });
+  }
+});
 
 // POST /api/auth/google — exchanges a Google ID token (from Google Identity
 // Services on the frontend's login page) for a session JWT, IF the signed-in

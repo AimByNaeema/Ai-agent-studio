@@ -17,8 +17,12 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto; -- for gen_random_uuid()
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS admins (
   email TEXT PRIMARY KEY,
+  password_hash TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- Safe to re-run on an already-migrated database (the table may already
+-- exist from before password login was added).
+ALTER TABLE admins ADD COLUMN IF NOT EXISTS password_hash TEXT;
 
 -- ----------------------------------------------------------------------------
 -- 1. project_leads — Contact form + Get Started onboarding submissions
@@ -203,3 +207,8 @@ INSERT INTO admins (email) VALUES
   ('aimbynaeema@gmail.com'),
   ('aiagentstudioo@gmail.com')
 ON CONFLICT (email) DO NOTHING;
+
+-- Note: initial admin passwords are NOT seeded here (never commit a
+-- password hash to source control). See server/db/migrate.js — it applies
+-- ADMIN_SEED_PASSWORD_HASH (a Railway environment variable, never in Git)
+-- to any admin row that doesn't have a password_hash yet.

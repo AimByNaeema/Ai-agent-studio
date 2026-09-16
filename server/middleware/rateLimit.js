@@ -28,3 +28,13 @@ export const chatLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: 'Too many messages. Please wait a moment and try again.' },
 });
+
+// Strict limit on admin login attempts (email + password) to slow down
+// credential-guessing/brute-force attempts against the admin account.
+export const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many sign-in attempts. Please wait a few minutes and try again.' },
+});

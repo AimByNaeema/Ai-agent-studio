@@ -51,7 +51,6 @@ import {
   seedFirestoreInitialData,
 } from '../lib/api';
 import { getSession, setSession, onSessionChange, AdminSession } from '../lib/session';
-import { signInWithGoogle } from '../lib/googleAuth';
 
 // Only these Google accounts may reach the admin dashboard. This mirrors the
 // server-side allowlist in server/middleware/requireAdmin.js (the `admins`
@@ -70,8 +69,10 @@ export const AdminPage: React.FC = () => {
   const [currentSession, setCurrentSession] = useState<AdminSession | null>(getSession());
   const [authError, setAuthError] = useState<string | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
 
-  // Monitor the admin session (set after Google Sign-In verifies against the
+  // Monitor the admin session (set after email/password sign-in verifies against the
   // backend's admin allowlist; cleared automatically on a 401 from any
   // admin-only request — see src/lib/api.ts's adminFetch).
   useEffect(() => {
@@ -135,29 +136,29 @@ export const AdminPage: React.FC = () => {
     }
   }, [isAuthenticated]);
 
-  const handleGoogleSignIn = async () => {
+  const handleEmailSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginEmail || !loginPassword) {
+      setAuthError('Please enter your admin email and password.');
+      return;
+    }
     setIsAuthLoading(true);
     setAuthError(null);
     try {
-      // Google Identity Services replaces Firebase's signInWithPopup here -
-      // same "Sign in with Google" UX, no Firebase involved. The resulting
-      // ID token is verified server-side and exchanged for a session token.
-      const credential = await signInWithGoogle();
-      const res = await fetch(`${API_BASE_URL}/api/auth/google`, {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ credential }),
+        body: JSON.stringify({ email: loginEmail.trim(), password: loginPassword }),
       });
       const data = await res.json();
       if (!res.ok) {
-        // Covers both "not verified" and "not on the admin allowlist" -
-        // never grants dashboard access either way.
-        setAuthError(data?.error || 'This Google account is not authorized for admin access.');
+        setAuthError(data?.error || 'Incorrect email or password.');
         return;
       }
       setSession({ token: data.token, email: data.email, name: data.name, picture: data.picture });
+      setLoginPassword('');
     } catch (err: any) {
-      setAuthError(err?.message || 'Google sign-in failed. Please try again.');
+      setAuthError(err?.message || 'Sign-in failed. Please try again.');
     } finally {
       setIsAuthLoading(false);
     }
@@ -269,23 +270,43 @@ export const AdminPage: React.FC = () => {
 
           <div className="space-y-4 text-left">
             <p className="text-xs text-slate-400 text-center">
-              Sign in with an authorized administrator Google account.
+              Sign in with your administrator email and password.
             </p>
 
-            <button
-              type="button"
-              onClick={handleGoogleSignIn}
-              disabled={isAuthLoading}
-              className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 font-bold text-xs text-slate-900 transition-all shadow-md cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5"
-            >
-              <svg className="w-4 h-4 shrink-0" viewBox="0 0 48 48" aria-hidden="true">
-                <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z" />
-                <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z" />
-                <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z" />
-                <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z" />
-              </svg>
-              {isAuthLoading ? 'Signing in...' : 'Sign in with Google'}
-            </button>
+            <form onSubmit={handleEmailSignIn} className="space-y-3">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-300 block">Admin Email</label>
+                <input
+                  type="email"
+                  required
+                  autoComplete="username"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 focus:outline-none"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-300 block">Password</label>
+                <input
+                  type="password"
+                  required
+                  autoComplete="current-password"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white placeholder:text-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 focus:outline-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isAuthLoading}
+                className="w-full py-2.5 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 font-bold text-xs text-white transition-all shadow-md cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5"
+              >
+                {isAuthLoading ? 'Signing in...' : 'Sign In'}
+              </button>
+            </form>
 
             {authError && (
               <div className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
@@ -301,7 +322,7 @@ export const AdminPage: React.FC = () => {
 
           <div className="pt-2 text-[11px] text-slate-500 flex items-center justify-center gap-1.5 border-t border-slate-800/80">
             <Lock className="w-3 h-3 text-emerald-400" />
-            <span>Protected by PostgreSQL & Google Sign-In</span>
+            <span>Protected by PostgreSQL</span>
           </div>
         </div>
       </div>
@@ -841,7 +862,7 @@ export const AdminPage: React.FC = () => {
                 <Database className="w-6 h-6 text-orange-500" />
                 <div>
                   <h3 className="text-base font-bold text-white">PostgreSQL & Express Architecture</h3>
-                  <p className="text-xs text-slate-400">Production relational database schema on Railway, with authorization enforced in the Express API layer and Google Sign-In.</p>
+                  <p className="text-xs text-slate-400">Production relational database schema on Railway, with authorization enforced in the Express API layer and admin email/password sign-in.</p>
                 </div>
               </div>
 
@@ -877,7 +898,7 @@ export const AdminPage: React.FC = () => {
 {`// Backend configuration active:
 - API base URL: ${API_BASE_URL || '(same-origin — VITE_API_BASE_URL not set)'}
 - Database: PostgreSQL (Railway)
-- Auth: Google Identity Services + session JWT
+- Auth: admin email + password + session JWT
 - Schema: server/db/schema.sql (Active & Deployed)`}
                 </pre>
 
